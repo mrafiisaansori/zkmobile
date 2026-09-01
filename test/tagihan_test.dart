@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zkkasir/models.dart';
+import 'package:zkkasir/shared/models/models.dart';
+import 'package:zkkasir/features/pos/models/cart_item.dart';
+import 'package:zkkasir/features/pos/models/tagihan.dart';
 
 Produk _p(int harga, {int stok = 99}) => Produk.fromJson(
     {'ID': 1, 'NAMA': 'X', 'STOK': stok, 'HARGA_JUAL': harga});

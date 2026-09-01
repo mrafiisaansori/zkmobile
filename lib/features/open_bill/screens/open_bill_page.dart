@@ -1,0 +1,386 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/offline/catalog_cache.dart';
+import '../../../core/offline/offline_queue.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/formatters.dart';
+import '../../../shared/models/models.dart';
+import '../../../shared/widgets/widgets.dart';
+import '../../pos/cubit/cart_cubit.dart';
+import '../../shell/cubit/shell_cubit.dart';
+import '../cubit/open_bill_cubit.dart';
+
+// Padanan src/app/kasir/open-bill/page.tsx.
+class OpenBillPage extends StatelessWidget {
+  const OpenBillPage({super.key});
+  @override
+  Widget build(BuildContext context) => BlocProvider(
+        create: (_) => OpenBillCubit()..load(),
+        child: const _OpenBillView(),
+      );
+}
+
+class _OpenBillView extends StatefulWidget {
+  const _OpenBillView();
+  @override
+  State<_OpenBillView> createState() => _OpenBillViewState();
+}
+
+class _OpenBillViewState extends State<_OpenBillView> {
+  final _search = TextEditingController();
+
+  static const _tabs = [
+    ('OPEN', 'Aktif'),
+    ('PAID', 'Lunas'),
+    ('CANCELLED', 'Batal'),
+  ];
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  // Draft bill belum punya ID server, jadi "dibuka" bukan lewat detail bill
+  // sungguhan — item-nya dituang balik ke keranjang biasa lalu diarahkan ke
+  // POS, sama seperti draft transaksi offline lain: tambah/bayar lewat alur
+  // checkout offline yang sudah ada.
+  Future<void> _bukaPending(BuildContext context, QueuedSale item) async {
+    final cart = context.read<CartCubit>();
+    cart.clear();
+    final produk = await readCachedProduk();
+    final items = (item.body['items'] as List).cast<Map>();
+    for (final it in items) {
+      final p = produk.where((x) => x.id == it['id_produk']).firstOrNull;
+      if (p == null) continue;
+      for (var i = 0; i < (it['qty'] as int); i++) {
+        cart.addItem(p);
+      }
+    }
+    if (!context.mounted) return;
+    await context.read<OpenBillCubit>().removePending(item.localId);
+    if (!context.mounted) return;
+    context.read<ShellCubit>().openPos();
+  }
+
+  Future<void> _hapusPending(BuildContext context, QueuedSale item) async {
+    final ok = await confirmDialog(context,
+        title: 'Batalkan bill ini?',
+        message:
+            'Bill "${item.label}" belum pernah terkirim ke server dan akan dihapus permanen.',
+        danger: true);
+    if (!ok) return;
+    if (!context.mounted) return;
+    await context.read<OpenBillCubit>().removePending(item.localId);
+    if (context.mounted) toastOk(context, 'Bill dibatalkan');
+  }
+
+  // Buka bill di POS: muat detail ke keranjang lalu pindah tab.
+  Future<void> _buka(BuildContext context, OpenBill b) async {
+    try {
+      final full = await context.read<OpenBillCubit>().openBillDetail(b.id);
+      if (!context.mounted) return;
+      context.read<CartCubit>().loadBill(full);
+      context.read<ShellCubit>().openPos();
+    } catch (e) {
+      if (context.mounted) toastError(context, e);
+    }
+  }
+
+  Future<void> _batalkan(BuildContext context, OpenBill b) async {
+    final ok = await confirmDialog(context,
+        title: 'Batalkan bill?',
+        message: 'Bill ${b.noBill ?? b.id} akan dibatalkan.',
+        danger: true);
+    if (!ok) return;
+    if (!context.mounted) return;
+    final cubit = context.read<OpenBillCubit>();
+    final success = await cubit.cancelBill(b.id);
+    if (!context.mounted) return;
+    if (success) {
+      toastOk(context, 'Open bill dibatalkan');
+    } else {
+      toastError(context, cubit.state.error ?? 'Gagal membatalkan bill');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return MultiBlocListener(
+      listeners: [
+        // Padanan goToOpenBill() lama yang me-refresh _openBillKey secara
+        // eksplisit — sekarang halaman ini sendiri yang dengar perpindahan
+        // tab dari ShellCubit dan refresh dirinya saat ditampilkan.
+        BlocListener<ShellCubit, ShellState>(
+          listenWhen: (prev, curr) => prev.tab != curr.tab && curr.tab == 2,
+          listener: (context, state) => context.read<OpenBillCubit>().refresh(),
+        ),
+      ],
+      child: HeroShell(
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                child: SizedBox(
+                  height: 46,
+                  child: TextField(
+                    controller: _search,
+                    onChanged: (v) => context.read<OpenBillCubit>().onSearchChanged(v),
+                    style: TextStyle(color: dark ? Colors.white : ZK.ink),
+                    decoration: InputDecoration(
+                      hintText: 'Cari nama pelanggan / no bill...',
+                      hintStyle:
+                          TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
+                      prefixIcon: Icon(Icons.search,
+                          size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                      filled: true,
+                      fillColor: dark ? ZK.cardDark : Colors.white,
+                      contentPadding: EdgeInsets.zero,
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: r12,
+                          borderSide: BorderSide(color: dark ? ZK.lineDark : ZK.brand200)),
+                      focusedBorder: const OutlineInputBorder(
+                          borderRadius: r12,
+                          borderSide: BorderSide(color: ZK.primary, width: 1.6)),
+                    ),
+                  ),
+                ),
+              ),
+              BlocBuilder<OpenBillCubit, OpenBillState>(
+                builder: (context, state) => SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: [
+                      for (final t in _tabs)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: GestureDetector(
+                            onTap: () => context.read<OpenBillCubit>().setStatus(t.$1),
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: state.status == t.$1
+                                    ? ZK.primary
+                                    : (dark ? ZK.cardDark : Colors.white),
+                                borderRadius: BorderRadius.circular(999),
+                                border: Border.all(
+                                    color: state.status == t.$1
+                                        ? ZK.primary
+                                        : (dark ? ZK.lineDark : ZK.brand200)),
+                              ),
+                              child: Text(t.$2,
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: state.status == t.$1
+                                          ? Colors.white
+                                          : (dark ? Colors.white70 : ZK.slate500))),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: BlocConsumer<OpenBillCubit, OpenBillState>(
+                  listenWhen: (prev, curr) => curr.error != null && curr.error != prev.error,
+                  listener: (context, state) => toastError(context, state.error!),
+                  builder: (context, state) {
+                    if (state.loading) {
+                      return const Center(
+                          child: CircularProgressIndicator(color: ZK.primary));
+                    }
+                    if (state.data.isEmpty &&
+                        (state.status != 'OPEN' || state.pendingBills.isEmpty)) {
+                      return const EmptyState(
+                          icon: Icons.receipt_long_outlined,
+                          title: 'Belum ada open bill',
+                          description: 'Simpan keranjang sebagai bill dari halaman Kasir.');
+                    }
+                    return RefreshIndicator(
+                      color: ZK.primary,
+                      onRefresh: () => context.read<OpenBillCubit>().refresh(),
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
+                        children: [
+                          if (state.status == 'OPEN')
+                            for (final p in state.pendingBills) _pendingCard(context, p, dark),
+                          for (final b in state.data) _card(context, b, dark),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pendingCard(BuildContext context, QueuedSale q, bool dark) {
+    final rejected = q.status == 'failed';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: dark ? ZK.cardDark : Colors.white,
+        borderRadius: r14,
+        border: Border.all(color: rejected ? ZK.rose.withValues(alpha: 0.3) : ZK.amber700.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(rejected ? Icons.error_outline : Icons.cloud_off,
+                  size: 16, color: rejected ? ZK.rose : ZK.amber700),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(q.label,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: dark ? Colors.white : ZK.ink)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+              rejected
+                  ? 'Ditolak server: ${q.errorMessage ?? '-'}'
+                  : 'Belum tersinkron ke server — buka untuk tambah item / bayar sekarang.',
+              style: TextStyle(
+                  fontSize: 12,
+                  color: rejected ? ZK.rose : (dark ? Colors.white60 : ZK.slate500))),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Spacer(),
+              OutlinedButton(
+                onPressed: () => _hapusPending(context, q),
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: ZK.rose,
+                    side: const BorderSide(color: Color(0xFFFECDD3)),
+                    shape: const RoundedRectangleBorder(borderRadius: r12)),
+                child: const Text('Batalkan'),
+              ),
+              const SizedBox(width: 8),
+              FilledButton(
+                onPressed: () => _bukaPending(context, q),
+                style: FilledButton.styleFrom(
+                    backgroundColor: ZK.primary,
+                    shape: const RoundedRectangleBorder(borderRadius: r12)),
+                child: const Text('Buka'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _card(BuildContext context, OpenBill b, bool dark) {
+    final aktif = b.status == 'OPEN';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: dark ? ZK.cardDark : Colors.white,
+        borderRadius: r14,
+        border: Border.all(color: dark ? ZK.lineDark : ZK.line),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                    b.customerName?.isNotEmpty == true
+                        ? b.customerName!
+                        : 'Tanpa nama',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: dark ? Colors.white : ZK.ink)),
+              ),
+              _statusBadge(b.status, dark),
+            ],
+          ),
+          const SizedBox(height: 3),
+          Text(
+              [
+                if (b.noBill != null) b.noBill!,
+                'Meja ${b.tableNo?.isNotEmpty == true ? b.tableNo : '-'}',
+                if (b.kasir != null) b.kasir!,
+              ].join(' · '),
+              style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate500)),
+          if (b.note != null) ...[
+            const SizedBox(height: 4),
+            Text(b.note!,
+                style: const TextStyle(fontSize: 12, color: ZK.primary)),
+          ],
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text(rupiah(b.total),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: dark ? Colors.white : ZK.slate900)),
+              const Spacer(),
+              if (aktif) ...[
+                OutlinedButton(
+                  onPressed: () => _batalkan(context, b),
+                  style: OutlinedButton.styleFrom(
+                      foregroundColor: ZK.rose,
+                      side: const BorderSide(color: Color(0xFFFECDD3)),
+                      shape: const RoundedRectangleBorder(borderRadius: r12)),
+                  child: const Text('Batalkan'),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: () => _buka(context, b),
+                  style: FilledButton.styleFrom(
+                      backgroundColor: ZK.primary,
+                      shape: const RoundedRectangleBorder(borderRadius: r12)),
+                  child: const Text('Buka'),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusBadge(String s, bool dark) {
+    final (bg, fg, label) = switch (s) {
+      'PAID' => (const Color(0xFFECFDF5), const Color(0xFF047857), 'Lunas'),
+      'CANCELLED' => (ZK.rose50, ZK.rose, 'Batal'),
+      _ => (
+          dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50,
+          dark ? Colors.white : ZK.brand700,
+          'Aktif'
+        ),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+      child: Text(label,
+          style: TextStyle(
+              fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
+    );
+  }
+}

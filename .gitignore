@@ -49,3 +49,15 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Secrets / credentials - never commit, repo is public
+.env
+android/key.properties
+*.jks
+*.keystore
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Local tooling output - not part of the app, doesn't belong in the repo
+.claude/
+graphify-out/
