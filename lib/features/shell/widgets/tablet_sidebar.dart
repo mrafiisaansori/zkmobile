@@ -35,28 +35,104 @@ class TabletSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      width: 220,
+    // Di tab Kasir sidebar menyusut jadi rail 72px supaya grid produk lebih lega.
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+      width: selectedIndex == 1 ? 72 : 220,
       decoration: BoxDecoration(
         color: dark ? ZK.cardDark : Colors.white,
         border: Border(right: BorderSide(color: dark ? ZK.lineDark : ZK.line)),
       ),
-      child: Column(
-        children: [
-          _header(dark),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+      child: ClipRect(
+        child: LayoutBuilder(
+          // Mode ditentukan dari lebar aktual, supaya selama animasi tidak
+          // ada layout penuh yang dipaksa masuk ke lebar rail.
+          builder: (context, c) {
+            final rail = c.maxWidth < 140;
+            final items = [
+              ('dashboard', 'Dashboard'),
+              ('kasir', 'Kasir'),
+              ('openbill', 'Open Bill'),
+              ('kas', 'Sesi Kas'),
+              ('riwayat', 'Riwayat'),
+            ];
+            return Column(
               children: [
-                _item(0, 'dashboard', 'Dashboard', dark),
-                _item(1, 'kasir', 'Kasir', dark, badge: cartCount > 0 ? '$cartCount' : null),
-                _item(2, 'openbill', 'Open Bill', dark),
-                _item(3, 'kas', 'Sesi Kas', dark),
-                _item(4, 'riwayat', 'Riwayat', dark),
+                rail
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 16, bottom: 12),
+                        child: Image.asset('assets/logo.png', height: 36, width: 36),
+                      )
+                    : _header(dark),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    children: [
+                      for (var i = 0; i < items.length; i++)
+                        (rail ? _railItem : _item)(i, items[i].$1, items[i].$2, dark,
+                            badge: i == 1 && cartCount > 0 ? '$cartCount' : null),
+                    ],
+                  ),
+                ),
+                rail ? _railFooter(context, dark) : _footer(context, dark),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _railItem(int index, String icon, String label, bool dark, {String? badge}) {
+    final selected = selectedIndex == index;
+    final iconWidget = MenuIcon(name: icon, active: false, size: 24, dark: selected ? true : null);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: r12,
+          onTap: () => onSelect(index),
+          child: Container(
+            height: 56,
+            decoration: BoxDecoration(color: selected ? ZK.primary : null, borderRadius: r12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                badge == null ? iconWidget : Badge(label: Text(badge), child: iconWidget),
+                const SizedBox(height: 3),
+                Text(label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: selected ? Colors.white : (dark ? Colors.white70 : ZK.slate600))),
               ],
             ),
           ),
-          _footer(context, dark),
+        ),
+      ),
+    );
+  }
+
+  // Footer rail: cukup toggle tema + logout.
+  Widget _railFooter(BuildContext context, bool dark) {
+    final color = dark ? Colors.white70 : ZK.slate600;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        children: [
+          Divider(color: dark ? ZK.lineDark : ZK.line, indent: 12, endIndent: 12),
+          IconButton(
+            onPressed: () => context.read<ThemeCubit>().toggle(),
+            icon: Icon(dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, size: 20, color: color),
+          ),
+          IconButton(
+            onPressed: () => _logout(context),
+            icon: Icon(Icons.logout, size: 20, color: color),
+          ),
         ],
       ),
     );

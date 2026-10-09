@@ -489,12 +489,13 @@ class _PosView extends StatelessWidget {
         top: false,
         bottom: false,
         child: tablet
-            ? Row(
+            ? LayoutBuilder(builder: (context, c) => Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(child: _productColumn(context, catalog, cart, checkout, showCartBar: false)),
                   SizedBox(
-                    width: 400,
+                    // 800px → 360, 1280 → 410, 1600+ → 440.
+                    width: (c.maxWidth * 0.32).clamp(360.0, 440.0),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 16, 16, 16),
                       child: CartSheet(
@@ -510,7 +511,7 @@ class _PosView extends StatelessWidget {
                     ),
                   ),
                 ],
-              )
+              ))
             : _productColumn(context, catalog, cart, checkout, showCartBar: true),
       ),
     );
@@ -542,12 +543,19 @@ class _PosView extends StatelessWidget {
                           // Bar keranjang ada di bawah Column (tidak menimpa grid),
                           // jadi padding bawah cukup 16.
                           padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: isTablet(context) ? 4 : 2,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childAspectRatio: 0.80,
-                          ),
+                          gridDelegate: isTablet(context)
+                              ? const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 180,
+                                  mainAxisSpacing: 12,
+                                  crossAxisSpacing: 12,
+                                  childAspectRatio: 0.80,
+                                )
+                              : const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 12,
+                                  crossAxisSpacing: 12,
+                                  childAspectRatio: 0.80,
+                                ),
                           itemCount: catalog.produk.length + (catalog.loadingMore ? 2 : 0),
                           itemBuilder: (_, i) => i >= catalog.produk.length
                               ? const Center(
