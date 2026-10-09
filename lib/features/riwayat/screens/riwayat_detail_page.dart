@@ -82,6 +82,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
       ],
       total: t.total,
       kasir: t.namaKasir,
+      member: t.namaMember,
       metode: t.jenisBayar,
       status: t.statusBayar,
     );

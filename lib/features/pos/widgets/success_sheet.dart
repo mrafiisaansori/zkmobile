@@ -15,11 +15,14 @@ class SuccessSheet extends StatelessWidget {
   final CheckoutResult result;
   final String metode, judul;
   final List<CartItem> items;
+  // Nama member transaksi (dicatat sebelum keranjang dikosongkan checkout).
+  final String? member;
   const SuccessSheet(
       {super.key,
       required this.result,
       required this.metode,
       this.items = const [],
+      this.member,
       this.judul = 'Transaksi berhasil'});
 
   Future<void> _kirimWA(BuildContext context) async {
@@ -49,6 +52,7 @@ class SuccessSheet extends StatelessWidget {
       total: result.total,
       bayar: result.bayar,
       kembalian: result.kembalian,
+      member: member,
       metode: metode,
     );
     showModalBottomSheet<void>(

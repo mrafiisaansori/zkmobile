@@ -163,6 +163,10 @@ class _SplitBillSheetState extends State<SplitBillSheet> {
         }()
     ];
 
+    // Member hanya tercatat di split mode bill (backend memakai member bill);
+    // split transaksi langsung tidak mengirim member, jadi tidak dicetak.
+    final cartNow = context.read<CartCubit>().state;
+    final memberName = cartNow.billMode ? cartNow.member?.nama : null;
     setState(() => _loading = true);
     try {
       final res = await widget.onPay(SplitPayload(
@@ -189,7 +193,8 @@ class _SplitBillSheetState extends State<SplitBillSheet> {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (_) => SuccessSheet(result: res, metode: _metode.nama, items: items, judul: 'Split bill dibayar'),
+        builder: (_) => SuccessSheet(
+            result: res, metode: _metode.nama, items: items, member: memberName, judul: 'Split bill dibayar'),
       );
     } catch (e) {
       if (mounted) toastError(context, e);

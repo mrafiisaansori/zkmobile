@@ -47,6 +47,7 @@ class PrinterService {
     String? namaToko,
     String? alamatToko,
     String? kasir,
+    String? member,
     String? metode,
     String? status,
     bool showBranding = false,
@@ -72,6 +73,9 @@ class PrinterService {
     await bluetooth.printLeftRight('Tanggal', tanggal, 0);
     if (kasir != null && kasir.isNotEmpty) {
       await bluetooth.printLeftRight('Kasir', kasir, 0);
+    }
+    if (member != null && member.isNotEmpty) {
+      await bluetooth.printLeftRight('Member', member, 0);
     }
     await bluetooth.printCustom(divider, 0, 1);
     var subtotal = 0;
@@ -116,7 +120,7 @@ class PrintableReceipt {
   final List<ReceiptLine> items;
   final int total;
   final int? bayar, kembalian;
-  final String? kasir, metode, status;
+  final String? kasir, member, metode, status;
   PrintableReceipt({
     required this.noNota,
     required this.tanggal,
@@ -125,6 +129,7 @@ class PrintableReceipt {
     this.bayar,
     this.kembalian,
     this.kasir,
+    this.member,
     this.metode,
     this.status,
   });

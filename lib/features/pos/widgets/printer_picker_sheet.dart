@@ -57,6 +57,7 @@ class _PrinterPickerSheetState extends State<PrinterPickerSheet> {
         namaToko: id['nama'],
         alamatToko: id['alamat'],
         kasir: widget.receipt.kasir,
+        member: widget.receipt.member,
         metode: widget.receipt.metode,
         status: widget.receipt.status,
         showBranding: !Session.isPro,

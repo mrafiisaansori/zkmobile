@@ -100,6 +100,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
           ? 'Pembayaran QRIS Manual'
           : _ket.text.trim();
       final itemsSnapshot = List<CartItem>.from(cartCubit.state.items);
+      final memberSnapshot = cartCubit.state.member?.nama;
       final res = await widget.onConfirm(_metode, bayar, ket);
       if (!mounted) return;
       Navigator.pop(context);
@@ -113,7 +114,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (_) => SuccessSheet(result: res, metode: _metode.nama, items: itemsSnapshot),
+        builder: (_) => SuccessSheet(result: res, metode: _metode.nama, items: itemsSnapshot, member: memberSnapshot),
       );
     } catch (e) {
       if (mounted) toastError(context, e);
