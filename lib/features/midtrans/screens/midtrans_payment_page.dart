@@ -168,7 +168,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
                   label: const Text('Batalkan Pembayaran',
                       style: TextStyle(color: ZK.rose, fontWeight: FontWeight.w700)),
                   style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFFFECDD3)),
+                      side: const BorderSide(color: ZK.rose200),
                       shape: const RoundedRectangleBorder(borderRadius: r12)),
                 ),
               ),

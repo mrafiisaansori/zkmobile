@@ -61,7 +61,7 @@ class _DiskonBoxState extends State<DiskonBox> {
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: dark ? Colors.white : const Color(0xFF334155))),
+                          color: dark ? Colors.white : ZK.slate700)),
                 ),
                 if (widget.diskon > 0)
                   TextButton(
@@ -96,7 +96,7 @@ class _DiskonBoxState extends State<DiskonBox> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                   enabledBorder: OutlineInputBorder(
                       borderRadius: r12,
-                      borderSide: BorderSide(color: dark ? ZK.lineDark : const Color(0xFFE2E8F0))),
+                      borderSide: BorderSide(color: dark ? ZK.lineDark : ZK.slate200)),
                   focusedBorder: const OutlineInputBorder(
                       borderRadius: r12,
                       borderSide: BorderSide(color: ZK.primary, width: 1.6)),
@@ -134,7 +134,7 @@ class _DiskonBoxState extends State<DiskonBox> {
           color: aktif ? ZK.primary : (dark ? ZK.cardDark : Colors.white),
           borderRadius: r12,
           border: Border.all(
-              color: aktif ? ZK.primary : (dark ? ZK.lineDark : const Color(0xFFE2E8F0))),
+              color: aktif ? ZK.primary : (dark ? ZK.lineDark : ZK.slate200)),
         ),
         child: Text('$p%',
             style: TextStyle(

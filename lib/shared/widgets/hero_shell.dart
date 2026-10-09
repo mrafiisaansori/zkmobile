@@ -141,7 +141,7 @@ class HeroShell extends StatelessWidget {
                           height: 1.1)),
                   Text('Solusi Bisnis Anda',
                       style: TextStyle(
-                          fontSize: 10.5, color: Colors.white70, fontWeight: FontWeight.w600)),
+                          fontSize: 11, color: Colors.white70, fontWeight: FontWeight.w600)),
                 ],
               ),
               const Spacer(),
@@ -185,7 +185,7 @@ class HeroShell extends StatelessWidget {
                       children: [
                         Text(titleOverride!,
                             style: const TextStyle(
-                                fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                                fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
                         if (subtitleOverride != null)
                           Text(subtitleOverride!,
                               style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
@@ -201,7 +201,7 @@ class HeroShell extends StatelessWidget {
                           children: [
                             Text(t.$1,
                                 style: const TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                                    fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
                             Text(t.$2,
                                 style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
                           ],
@@ -267,7 +267,7 @@ class _OfflineStrip extends StatelessWidget {
                       SizedBox(width: 6),
                       Text('OFFLINE: pakai data tersimpan terakhir',
                           style: TextStyle(
-                              fontSize: 11.5,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                               letterSpacing: 0.2)),

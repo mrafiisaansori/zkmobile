@@ -3,7 +3,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/formatters.dart';
 import '../../../shared/models/models.dart';
 import '../../../shared/widgets/widgets.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 
 // ===== Varian / modifier (padanan modal modifier di pos/page.tsx) =====
 class ModifierSheet extends StatefulWidget {
@@ -109,7 +109,7 @@ class _ModifierSheetState extends State<ModifierSheet> {
                 if (g.wajib)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                    decoration: BoxDecoration(color: ZK.rose50, borderRadius: BorderRadius.circular(999)),
+                    decoration: BoxDecoration(color: softBg(ZK.rose, ZK.rose50, dark), borderRadius: BorderRadius.circular(6)),
                     child: const Text('Wajib',
                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: ZK.rose)),
                   ),
@@ -148,7 +148,7 @@ class _ModifierSheetState extends State<ModifierSheet> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(o.nama,
-                            style: TextStyle(fontSize: 14, color: dark ? Colors.white : const Color(0xFF1E293B))),
+                            style: TextStyle(fontSize: 14, color: dark ? Colors.white : ZK.slate800)),
                       ),
                       if (o.harga != 0)
                         Text('+ ${rupiah(o.harga)}',

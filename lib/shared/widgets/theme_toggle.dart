@@ -27,7 +27,7 @@ class ThemeToggle extends StatelessWidget {
                 borderRadius: BorderRadius.circular(height),
                 gradient: LinearGradient(
                   colors: dark
-                      ? const [Color(0xFF1E293B), Color(0xFF0B1220)]
+                      ? const [ZK.slate800, Color(0xFF0B1220)]
                       : [ZK.primary, ZK.accent],
                 ),
                 boxShadow: [
@@ -74,7 +74,7 @@ class ThemeToggle extends StatelessWidget {
                           dark ? Icons.nightlight_round : Icons.wb_sunny_rounded,
                           key: ValueKey(dark),
                           size: thumb * 0.58,
-                          color: dark ? const Color(0xFF1E293B) : ZK.primary,
+                          color: dark ? ZK.slate800 : ZK.primary,
                         ),
                       ),
                     ),

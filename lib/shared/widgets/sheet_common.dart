@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
 
-// Helper bottom-sheet bersama untuk seluruh form-sheet admin CRUD (kategori,
-// satuan, supplier, member, pengguna, dan varian_sheet produk sendiri) —
-// disalin identik dari lib/sheets.dart lama (SheetHeader/FieldLabel/
-// sheetBox/sheetInput belum dipindah ke shared/widgets, jadi ditaruh di sini
-// karena produk adalah implementasi acuan; entity lain import relatif dari
-// sini alih-alih menduplikasi).
+// Helper & widget kecil dipakai bersama oleh semua sheet POS (padanan bagian
+// atas lib/sheets.dart lama).
+
 BoxDecoration sheetBox(bool dark) => BoxDecoration(
       color: dark ? ZK.cardDark : Colors.white,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -92,7 +89,7 @@ class FieldLabel extends StatelessWidget {
           style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: dark ? Colors.white70 : const Color(0xFF334155))),
+              color: dark ? Colors.white70 : ZK.slate700)),
     );
   }
 }

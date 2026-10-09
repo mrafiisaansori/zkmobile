@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/widgets.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 
 // ===== Kirim struk via WhatsApp — dipakai di POS & Riwayat detail =====
 class WaNumberSheet extends StatefulWidget {

@@ -184,7 +184,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                              fontSize: 12.5,
+                                              fontSize: 13,
                                               fontWeight: FontWeight.w700,
                                               color: dark ? Colors.white : ZK.brand700)),
                                     ),
@@ -303,7 +303,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
           color: sah ? softBg(ZK.success, ZK.successBg, dark) : softBg(ZK.rose, ZK.rose50, dark),
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Text(sah ? 'Sah' : 'Batal',
             style: TextStyle(

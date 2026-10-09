@@ -10,7 +10,7 @@ Future<bool> confirmDialog(BuildContext context,
     builder: (c) => AlertDialog(
       shape: const RoundedRectangleBorder(borderRadius: r14),
       title: Text(title,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
       content: Text(message, style: const TextStyle(fontSize: 14)),
       actions: [
         TextButton(

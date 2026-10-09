@@ -65,7 +65,7 @@ class _ProductGridSkeletonState extends State<ProductGridSkeleton>
                     height: 16,
                     width: 60,
                     decoration: BoxDecoration(
-                        color: base, borderRadius: BorderRadius.circular(999))),
+                        color: base, borderRadius: BorderRadius.circular(6))),
                 const SizedBox(height: 8),
                 Container(height: 15, width: 70, color: base),
               ],

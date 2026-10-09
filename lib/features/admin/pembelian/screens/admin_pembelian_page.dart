@@ -183,7 +183,7 @@ class _AdminPembelianPageState extends State<AdminPembelianPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
                             color: _status == t.$1 ? ZK.primary : (dark ? ZK.cardDark : Colors.white),
-                            borderRadius: BorderRadius.circular(999),
+                            borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                                 color: _status == t.$1 ? ZK.primary : (dark ? ZK.lineDark : ZK.brand200)),
                           ),
@@ -273,10 +273,10 @@ class _AdminPembelianPageState extends State<AdminPembelianPage> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
-                                          color: bg, borderRadius: BorderRadius.circular(999)),
+                                          color: bg, borderRadius: BorderRadius.circular(6)),
                                       child: Text(statusLabel[p.status] ?? '-',
                                           style: TextStyle(
-                                              fontSize: 10.5, fontWeight: FontWeight.w700, color: tone)),
+                                              fontSize: 11, fontWeight: FontWeight.w700, color: tone)),
                                     ),
                                   ],
                                 ),

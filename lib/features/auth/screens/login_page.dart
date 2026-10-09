@@ -308,7 +308,7 @@ class _LoginFormState extends State<_LoginForm> {
               Text('Powered by zonakasir.com',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 12,
                       color: dark ? Colors.white60 : ZK.slate500,
                       fontWeight: FontWeight.w600)),
             ],
@@ -319,7 +319,7 @@ class _LoginFormState extends State<_LoginForm> {
         hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
         prefixIcon: Icon(icon, size: 19, color: dark ? Colors.white60 : ZK.slate400),
         filled: true,
-        fillColor: dark ? const Color(0xFF0D1830) : const Color(0xFFF8FAFC),
+        fillColor: dark ? const Color(0xFF0D1830) : ZK.slate50,
         contentPadding: const EdgeInsets.symmetric(vertical: 15),
         enabledBorder: OutlineInputBorder(
             borderRadius: r14, borderSide: BorderSide(color: dark ? ZK.lineDark : ZK.line)),
@@ -342,8 +342,8 @@ class _Label extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 7),
         child: Text(text,
             style: TextStyle(
-                fontSize: 13.5,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: dark ? Colors.white70 : const Color(0xFF334155))),
+                color: dark ? Colors.white70 : ZK.slate700)),
       );
 }

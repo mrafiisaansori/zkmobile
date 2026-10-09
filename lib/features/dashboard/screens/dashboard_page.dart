@@ -207,7 +207,7 @@ class _DashboardView extends StatelessWidget {
                   children: [
                     const Text('Selamat Berjualan!',
                         style: TextStyle(
-                            fontSize: 17,
+                            fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                             shadows: [
@@ -216,7 +216,7 @@ class _DashboardView extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text('Layani pelanggan lebih cepat dengan Zona Kasir.',
                         style: TextStyle(
-                            fontSize: 12.5,
+                            fontSize: 13,
                             color: Colors.white.withValues(alpha: 0.92),
                             shadows: const [
                               Shadow(color: Colors.black54, blurRadius: 6, offset: Offset(0, 1)),
@@ -291,7 +291,7 @@ class _StatCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.w900,
                       color: dark ? Colors.white : ZK.ink)),
         ],

@@ -256,7 +256,7 @@ class _AdminTransaksiPageState extends State<AdminTransaksiPage> {
                           decoration: p.status == 1 ? null : TextDecoration.lineThrough,
                           fontFeatures: tabular)),
                   if (p.jenisBayar != null)
-                    Text(p.jenisBayar!, style: TextStyle(fontSize: 11.5, color: c.muted)),
+                    Text(p.jenisBayar!, style: TextStyle(fontSize: 12, color: c.muted)),
                 ],
               ),
               PopupMenuButton<String>(

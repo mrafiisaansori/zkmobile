@@ -3,7 +3,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
-import '../../shared/widgets/sheet_common.dart';
+import '../../../../shared/widgets/sheet_common.dart';
 import '../data/varian_repository.dart';
 
 // Kelola opsi satu grup: list opsi ada + form tambah opsi baru. Muncul di
@@ -87,7 +87,7 @@ class _OptionsSheetState extends State<OptionsSheet> {
                         padding: const EdgeInsets.all(16),
                         itemCount: _options.length,
                         separatorBuilder: (_, __) =>
-                            Divider(height: 1, color: dark ? ZK.lineDark : const Color(0xFFF1F5F9)),
+                            Divider(height: 1, color: dark ? ZK.lineDark : ZK.slate100),
                         itemBuilder: (_, i) {
                           final o = _options[i];
                           return ListTile(

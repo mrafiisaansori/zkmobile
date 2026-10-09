@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import '../cubit/cart_cubit.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 
 // ===== Form open bill (simpan / ubah data bill) =====
 class BillFormSheet extends StatefulWidget {
@@ -69,7 +69,7 @@ class _BillFormSheetState extends State<BillFormSheet> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration:
-                          BoxDecoration(color: dark ? ZK.bgDark : const Color(0xFFF8FAFC), borderRadius: r12),
+                          BoxDecoration(color: dark ? ZK.bgDark : ZK.slate50, borderRadius: r12),
                       child: Text('Stok belum dipotong sampai bill dibayar.',
                           style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate500)),
                     ),

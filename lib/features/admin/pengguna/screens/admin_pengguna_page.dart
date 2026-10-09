@@ -84,7 +84,7 @@ class _AdminPenggunaPageState extends State<AdminPenggunaPage> {
         builder: (c) => AlertDialog(
           shape: const RoundedRectangleBorder(borderRadius: r14),
           title: const Text('Password baru',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

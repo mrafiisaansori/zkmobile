@@ -8,7 +8,7 @@ import '../../../shared/widgets/widgets.dart';
 import '../cubit/cart_cubit.dart';
 import '../models/cart_item.dart';
 import '../models/tagihan.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 import 'success_sheet.dart';
 
 // ===== Split bill (padanan components/pos/SplitBillModal.tsx) =====
@@ -217,7 +217,7 @@ class _SplitBillSheetState extends State<SplitBillSheet> {
                 children: [
                   Text('Jumlah orang',
                       style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w700, color: dark ? Colors.white70 : const Color(0xFF334155))),
+                          fontSize: 13, fontWeight: FontWeight.w700, color: dark ? Colors.white70 : ZK.slate700)),
                   const Spacer(),
                   QtyStepper(qty: _orang, onMinus: () => _setOrang(_orang - 1), onPlus: () => _setOrang(_orang + 1)),
                   const SizedBox(width: 8),
@@ -291,17 +291,17 @@ class _SplitBillSheetState extends State<SplitBillSheet> {
                 for (final u in units)
                   InkWell(
                     onTap: () => _move(u),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(6),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: dark ? ZK.bgDark : Colors.white,
-                        borderRadius: BorderRadius.circular(999),
+                        borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: dark ? ZK.lineDark : ZK.brand200),
                       ),
                       child: Text('${u.label} · ${rupiah(u.unitPrice)}',
                           style: TextStyle(
-                              fontSize: 11, fontWeight: FontWeight.w600, color: dark ? Colors.white : const Color(0xFF1E293B))),
+                              fontSize: 11, fontWeight: FontWeight.w600, color: dark ? Colors.white : ZK.slate800)),
                     ),
                   ),
               ],
@@ -354,12 +354,12 @@ class _SplitBillSheetState extends State<SplitBillSheet> {
                   for (final j in widget.jenisBayar)
                     InkWell(
                       onTap: () => setState(() => _metode = j),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: BorderRadius.circular(6),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: _metode.id == j.id ? ZK.primary : (dark ? ZK.bgDark : Colors.white),
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: _metode.id == j.id ? ZK.primary : (dark ? ZK.lineDark : ZK.brand200)),
                         ),
                         child: Text(j.nama,

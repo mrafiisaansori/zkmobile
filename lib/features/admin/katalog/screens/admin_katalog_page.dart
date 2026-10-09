@@ -193,7 +193,7 @@ class _AdminKatalogViewState extends State<_AdminKatalogView> {
                             ]),
                             const SizedBox(height: 4),
                             Text('Pengunjung scan QR ini untuk membuka katalog toko Anda.',
-                                style: TextStyle(fontSize: 11.5, color: muted)),
+                                style: TextStyle(fontSize: 12, color: muted)),
                           ],
                         ),
                       ),
@@ -262,7 +262,7 @@ class _AdminKatalogViewState extends State<_AdminKatalogView> {
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: dark ? Colors.white70 : const Color(0xFF334155))),
+                color: dark ? Colors.white70 : ZK.slate700)),
       );
 
   InputDecoration _sheetInput(String hint, {bool dark = false}) => InputDecoration(

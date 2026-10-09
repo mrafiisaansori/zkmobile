@@ -75,7 +75,7 @@ class _PajakTabViewState extends State<_PajakTabView> {
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: fg)),
                 const SizedBox(height: 8),
                 Text('Atur PPN dan biaya layanan secara terpisah agar perhitungan checkout dan struk tetap konsisten.',
-                    textAlign: TextAlign.center, style: TextStyle(fontSize: 12.5, color: muted)),
+                    textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: muted)),
               ],
             ),
           ),
@@ -163,7 +163,7 @@ class _PajakTabViewState extends State<_PajakTabView> {
             Expanded(
               child: Text(label,
                   style: TextStyle(
-                      fontSize: 13.5, fontWeight: FontWeight.w700, color: dark ? Colors.white : ZK.slate600)),
+                      fontSize: 14, fontWeight: FontWeight.w700, color: dark ? Colors.white : ZK.slate600)),
             ),
             Switch(value: value, onChanged: onChanged, activeThumbColor: ZK.primary),
           ],

@@ -137,7 +137,7 @@ class _ToastCardState extends State<_ToastCard> with SingleTickerProviderStateMi
                       Expanded(
                         child: Text(widget.message,
                             style: TextStyle(
-                                fontSize: 13.5,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 height: 1.3,
                                 color: dark ? Colors.white : ZK.slate900)),

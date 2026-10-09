@@ -3,7 +3,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/formatters.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../data/closing_repository.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 
 // Padanan _CloseKasirSheet lama — preview selisih + input uang fisik untuk
 // menutup sesi kasir.
@@ -97,7 +97,7 @@ class _CloseKasirSheetState extends State<CloseKasirSheet> {
                                         color: dark ? Colors.white : ZK.ink)),
                                 Text(rupiah(_expected),
                                     style: const TextStyle(
-                                        fontSize: 17,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w900,
                                         color: ZK.primary)),
                               ],

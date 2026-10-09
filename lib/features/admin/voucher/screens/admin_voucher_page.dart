@@ -165,10 +165,10 @@ class _AdminVoucherView extends StatelessWidget {
                                         color: v.aktif
                                             ? (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50)
                                             : softBg(ZK.rose, ZK.rose50, dark),
-                                        borderRadius: BorderRadius.circular(999)),
+                                        borderRadius: BorderRadius.circular(6)),
                                     child: Text(v.aktif ? 'Aktif' : 'Nonaktif',
                                         style: TextStyle(
-                                            fontSize: 10.5,
+                                            fontSize: 11,
                                             fontWeight: FontWeight.w700,
                                             color: v.aktif
                                                 ? (dark ? Colors.white : ZK.brand700)

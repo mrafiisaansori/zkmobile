@@ -160,7 +160,7 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
                             children: [
                               Icon(Icons.check_circle, size: 16, color: okTone(dark)),
                               const SizedBox(width: 8),
-                              Expanded(child: Text(benefit, style: TextStyle(fontSize: 12.5, color: fg))),
+                              Expanded(child: Text(benefit, style: TextStyle(fontSize: 13, color: fg))),
                             ],
                           ),
                         ),
@@ -280,13 +280,13 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
             ),
           ),
           Text(rupiah(p.totalBayar),
-              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: fg)),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: fg)),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
             child: Text(_statusLabel[p.status] ?? p.status,
-                style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: tone)),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: tone)),
           ),
         ],
       ),
@@ -311,18 +311,18 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
           children: [
             Text(label,
                 style: TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: selected ? ZK.primary : ZK.slate500)),
             const SizedBox(height: 4),
             if (coret != null)
               Text(rupiah(coret),
                   style: const TextStyle(
-                      fontSize: 10.5, color: ZK.slate500, decoration: TextDecoration.lineThrough)),
+                      fontSize: 11, color: ZK.slate500, decoration: TextDecoration.lineThrough)),
             Text(rupiah(price),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w900, color: fg)),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: fg)),
           ],
         ),
       ),
@@ -349,7 +349,7 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
             Text(label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 10.5, color: dark ? Colors.white60 : ZK.slate500)),
+                style: TextStyle(fontSize: 11, color: dark ? Colors.white60 : ZK.slate500)),
           ],
         ),
       );

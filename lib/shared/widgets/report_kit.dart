@@ -131,7 +131,7 @@ class RHero extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(facts[i].$1,
-                            maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, color: c.muted)),
+                            maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: c.muted)),
                         const SizedBox(height: 2),
                         FittedBox(
                           fit: BoxFit.scaleDown,
@@ -148,7 +148,7 @@ class RHero extends StatelessWidget {
             ),
           if (footnote != null) ...[
             const SizedBox(height: 14),
-            Text(footnote!, style: TextStyle(fontSize: 11.5, height: 1.4, color: c.muted)),
+            Text(footnote!, style: TextStyle(fontSize: 12, height: 1.4, color: c.muted)),
           ],
         ],
       ),
@@ -204,14 +204,14 @@ class RLedger extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                fontSize: 13.5,
+                                fontSize: 14,
                                 fontWeight: lines[i].strong ? FontWeight.w700 : FontWeight.w500,
                                 color: c.fg)),
                         if (lines[i].sub != null)
                           Text(lines[i].sub!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 11.5, color: c.muted)),
+                              style: TextStyle(fontSize: 12, color: c.muted)),
                       ],
                     ),
                   ),
@@ -257,8 +257,8 @@ class RShareList extends StatelessWidget {
                         TextSpan(children: [
                           TextSpan(
                               text: e.$1,
-                              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: c.fg)),
-                          TextSpan(text: '  ${e.$2}', style: TextStyle(fontSize: 11.5, color: c.muted)),
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.fg)),
+                          TextSpan(text: '  ${e.$2}', style: TextStyle(fontSize: 12, color: c.muted)),
                         ]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -266,12 +266,12 @@ class RShareList extends StatelessWidget {
                     ),
                     Text(format(e.$3),
                         style: TextStyle(
-                            fontSize: 13.5, fontWeight: FontWeight.w700, color: c.fg, fontFeatures: tabular)),
+                            fontSize: 14, fontWeight: FontWeight.w700, color: c.fg, fontFeatures: tabular)),
                     SizedBox(
                       width: 46,
                       child: Text(total == 0 ? '0%' : '${(e.$3 * 100 / total).round()}%',
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 11.5, color: c.muted, fontFeatures: tabular)),
+                          style: TextStyle(fontSize: 12, color: c.muted, fontFeatures: tabular)),
                     ),
                   ],
                 ),
@@ -385,7 +385,7 @@ class RSegmented<T> extends StatelessWidget {
                   decoration: BoxDecoration(color: o.$2 == selected ? ZK.primary : null, borderRadius: r12),
                   child: Text(o.$1,
                       style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: o.$2 == selected ? Colors.white : c.muted)),
                 ),
@@ -428,7 +428,7 @@ class RError extends StatelessWidget {
             const SizedBox(height: 10),
             Text('Laporan gagal dimuat', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.fg)),
             const SizedBox(height: 4),
-            Text(message, textAlign: TextAlign.center, style: TextStyle(fontSize: 12.5, color: c.muted)),
+            Text(message, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: c.muted)),
             const SizedBox(height: 14),
             OutlinedButton.icon(
               onPressed: onRetry,

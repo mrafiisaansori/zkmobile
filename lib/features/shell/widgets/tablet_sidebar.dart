@@ -246,7 +246,7 @@ class TabletSidebar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            fontSize: 12.5,
+                            fontSize: 13,
                             fontWeight: FontWeight.w800,
                             color: dark ? Colors.white : ZK.ink)),
                     Row(
@@ -261,7 +261,7 @@ class TabletSidebar extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(shiftActive ? 'Sesi aktif' : 'Sesi tidak aktif',
                             style: TextStyle(
-                                fontSize: 10.5, color: dark ? Colors.white60 : ZK.slate500)),
+                                fontSize: 11, color: dark ? Colors.white60 : ZK.slate500)),
                       ],
                     ),
                   ],

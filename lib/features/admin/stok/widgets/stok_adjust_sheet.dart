@@ -4,7 +4,7 @@ import '../../../../core/cubit/form_submit_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
-import '../../shared/widgets/sheet_common.dart';
+import '../../../../shared/widgets/sheet_common.dart';
 import '../data/stok_repository.dart';
 
 // Padanan _SesuaikanSheet di lib/admin_stok_page.dart lama.
@@ -175,7 +175,7 @@ class _StokAdjustSheetState extends State<StokAdjustSheet> {
         child: Text(label,
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: 12.5,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: active ? Colors.white : (dark ? Colors.white70 : ZK.slate500))),
       ),

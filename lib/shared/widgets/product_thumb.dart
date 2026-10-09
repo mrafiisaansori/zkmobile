@@ -13,7 +13,7 @@ class ProductThumb extends StatelessWidget {
         height: size,
         width: size,
         decoration: BoxDecoration(
-            color: dark ? ZK.bgDark : const Color(0xFFF8FAFC), borderRadius: r12),
+            color: dark ? ZK.bgDark : ZK.slate50, borderRadius: r12),
         child: url == null
             ? Icon(Icons.inventory_2_outlined,
                 size: size * 0.45, color: ZK.slate400)

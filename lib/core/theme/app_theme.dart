@@ -27,6 +27,11 @@ class ZK {
   static const successDark = Color(0xFF34D399); // teks/ikon di mode gelap, AA di cardDark
   static const successBg = Color(0xFFECFDF5);
   static const slate700 = Color(0xFF334155);
+  static const slate50 = Color(0xFFF8FAFC);
+  static const slate100 = Color(0xFFF1F5F9);
+  static const slate200 = Color(0xFFE2E8F0);
+  static const slate800 = Color(0xFF1E293B);
+  static const rose200 = Color(0xFFFECDD3);
   // Dark mode
   static const bgDark = Color(0xFF0B1220);
   static const cardDark = Color(0xFF121C30);

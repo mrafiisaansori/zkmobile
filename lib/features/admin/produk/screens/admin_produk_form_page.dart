@@ -12,7 +12,7 @@ import '../../shell/cubit/admin_shell_cubit.dart';
 import '../../shell/widgets/admin_sidebar.dart';
 import '../../../auth/screens/login_page.dart';
 import '../data/produk_repository.dart';
-import '../widgets/sheet_common.dart';
+import '../../../../shared/widgets/sheet_common.dart';
 
 // Padanan components/forms/ProdukForm.tsx — halaman penuh (bukan sheet)
 // karena jumlah field & preview foto butuh ruang lebih.

@@ -6,7 +6,7 @@ import '../../../shared/widgets/widgets.dart';
 import '../cubit/cart_cubit.dart';
 import '../cubit/cart_state.dart';
 import '../models/cart_item.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 
 // ===== Keranjang (padanan components/pos/Cart.tsx) =====
 class CartSheet extends StatelessWidget {
@@ -85,7 +85,7 @@ class CartSheet extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     itemCount: cart.items.length,
                     separatorBuilder: (_, __) =>
-                        Divider(height: 1, color: dark ? ZK.lineDark : const Color(0xFFF1F5F9)),
+                        Divider(height: 1, color: dark ? ZK.lineDark : ZK.slate100),
                     itemBuilder: (_, i) {
                       void onQty(int q) {
                         final r = context.read<CartCubit>().updateQty(cart.items[i], q);
@@ -149,7 +149,7 @@ class CartSheet extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: dark ? Colors.white : const Color(0xFF1E293B))),
+                              color: dark ? Colors.white : ZK.slate800)),
                       Text(cart.member == null ? 'Pilih member/customer' : 'Ganti member',
                           style: TextStyle(
                               fontSize: 11, color: dark ? Colors.white60 : ZK.slate500)),
@@ -198,7 +198,7 @@ class CartSheet extends StatelessWidget {
               diskon: cart.diskon,
               onChanged: context.read<CartCubit>().setDiskon),
           SizedBox(height: gapSm),
-          Divider(height: 1, color: dark ? ZK.lineDark : const Color(0xFFF1F5F9)),
+          Divider(height: 1, color: dark ? ZK.lineDark : ZK.slate100),
           SizedBox(height: gapSm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

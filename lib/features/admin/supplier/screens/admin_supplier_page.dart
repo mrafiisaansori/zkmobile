@@ -207,10 +207,10 @@ class _AdminSupplierPageState extends State<AdminSupplierPage> {
                                         color: s.status == 0
                                             ? softBg(ZK.rose, ZK.rose50, dark)
                                             : (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50),
-                                        borderRadius: BorderRadius.circular(999)),
+                                        borderRadius: BorderRadius.circular(6)),
                                     child: Text(s.status == 0 ? 'Nonaktif' : 'Aktif',
                                         style: TextStyle(
-                                            fontSize: 10.5,
+                                            fontSize: 11,
                                             fontWeight: FontWeight.w700,
                                             color: s.status == 0
                                                 ? ZK.rose

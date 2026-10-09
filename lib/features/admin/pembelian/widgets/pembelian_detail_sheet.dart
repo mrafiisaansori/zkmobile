@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
-import '../../shared/widgets/sheet_common.dart';
+import '../../../../shared/widgets/sheet_common.dart';
 
 // Padanan _PembelianDetailSheet di lib/admin_pembelian_page.dart lama.
 class PembelianDetailSheet extends StatelessWidget {

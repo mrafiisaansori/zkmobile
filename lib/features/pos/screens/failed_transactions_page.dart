@@ -187,7 +187,7 @@ class _FailedTransactionsPageState extends State<FailedTransactionsPage> {
                             width: 14,
                             child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.refresh, size: 16),
-                    label: const Text('Coba lagi', style: TextStyle(fontSize: 12.5)),
+                    label: const Text('Coba lagi', style: TextStyle(fontSize: 13)),
                     style: OutlinedButton.styleFrom(
                         foregroundColor: ZK.primary,
                         side: const BorderSide(color: ZK.brand200),
@@ -203,7 +203,7 @@ class _FailedTransactionsPageState extends State<FailedTransactionsPage> {
                     onPressed: busy ? null : () => _hapus(item),
                     style: OutlinedButton.styleFrom(
                         foregroundColor: ZK.rose,
-                        side: const BorderSide(color: Color(0xFFFECDD3)),
+                        side: const BorderSide(color: ZK.rose200),
                         shape: const RoundedRectangleBorder(borderRadius: r12)),
                     child: const Icon(Icons.delete_outline, size: 16),
                   ),

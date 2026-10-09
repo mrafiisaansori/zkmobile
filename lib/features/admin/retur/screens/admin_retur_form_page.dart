@@ -6,7 +6,7 @@ import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../../shared/widgets/produk_picker_sheet.dart';
-import '../../shared/widgets/sheet_common.dart';
+import '../../../../shared/widgets/sheet_common.dart';
 import '../data/retur_repository.dart';
 
 const _kondisiOptions = ['Rusak', 'Salah kirim', 'Kedaluwarsa', 'Tidak sesuai', 'Lainnya'];
@@ -305,7 +305,7 @@ class _AdminReturFormPageState extends State<AdminReturFormPage> {
                         color: dark ? ZK.amber50.withValues(alpha: 0.15) : ZK.amber50, borderRadius: r12),
                     child: Text(
                         'Stok TIDAK berubah saat draft. Stok baru berkurang ketika retur diselesaikan. Pembatalan retur selesai akan mengembalikan stok.',
-                        style: TextStyle(fontSize: 11.5, color: ZK.amber700)),
+                        style: TextStyle(fontSize: 12, color: ZK.amber700)),
                   ),
                   const SizedBox(height: 18),
                   SizedBox(

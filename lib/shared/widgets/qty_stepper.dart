@@ -19,7 +19,7 @@ class QtyStepper extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           borderRadius: r12,
-          border: Border.all(color: dark ? ZK.lineDark : const Color(0xFFE2E8F0))),
+          border: Border.all(color: dark ? ZK.lineDark : ZK.slate200)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

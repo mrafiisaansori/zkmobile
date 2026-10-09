@@ -7,7 +7,7 @@ import '../../../shared/widgets/widgets.dart';
 import '../data/pos_repository.dart';
 import '../models/cart_item.dart';
 import 'printer_picker_sheet.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 import 'wa_number_sheet.dart';
 
 // ===== Struk sukses =====
@@ -80,14 +80,14 @@ class SuccessSheet extends StatelessWidget {
               const SizedBox(height: 14),
               Text(judul,
                   style:
-                      TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.ink)),
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.ink)),
               const SizedBox(height: 4),
               Text(result.noNota, style: TextStyle(fontSize: 13, color: dark ? Colors.white60 : ZK.slate500)),
               if (result.offline) ...[
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(color: ZK.amber50, borderRadius: BorderRadius.circular(999)),
+                  decoration: BoxDecoration(color: softBg(ZK.amber700, ZK.amber50, dark), borderRadius: BorderRadius.circular(6)),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -119,7 +119,7 @@ class SuccessSheet extends StatelessWidget {
                                 fontSize: 14, fontWeight: FontWeight.w700, color: dark ? Colors.white70 : ZK.brand700)),
                         Text(rupiah(result.kembalian),
                             style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w900, color: dark ? Colors.white : ZK.ink)),
+                                fontSize: 20, fontWeight: FontWeight.w900, color: dark ? Colors.white : ZK.ink)),
                       ],
                     ),
                   ],

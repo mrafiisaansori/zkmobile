@@ -102,7 +102,7 @@ class _RiwayatViewState extends State<_RiwayatView> {
                                 fontWeight: FontWeight.w700,
                                 color: dark ? Colors.white : ZK.brand700)),
                         Text(rupiah(state.total),
-                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: fg)),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: fg)),
                       ],
                     ),
                   ),
@@ -182,12 +182,12 @@ class _RiwayatViewState extends State<_RiwayatView> {
                 if (!state.rangeMode && !state.isToday)
                   InkWell(
                     onTap: () => context.read<RiwayatCubit>().resetToToday(),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(6),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                           color: dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand50,
-                          borderRadius: BorderRadius.circular(999)),
+                          borderRadius: BorderRadius.circular(6)),
                       child: const Text('Hari ini',
                           style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: ZK.primary)),
                     ),
@@ -263,7 +263,7 @@ class _RiwayatViewState extends State<_RiwayatView> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                         color: dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand50,
-                        borderRadius: BorderRadius.circular(999)),
+                        borderRadius: BorderRadius.circular(6)),
                     child: Text(p.jenisBayar!,
                         style: TextStyle(
                             fontSize: 10,

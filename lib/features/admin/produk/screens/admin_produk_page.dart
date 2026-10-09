@@ -229,10 +229,10 @@ class _AdminProdukPageState extends State<AdminProdukPage> {
                                             : p.stok <= 10
                                                 ? softBg(ZK.amber700, ZK.amber50, dark)
                                                 : (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50),
-                                        borderRadius: BorderRadius.circular(999)),
+                                        borderRadius: BorderRadius.circular(6)),
                                     child: Text('Stok ${p.stok}',
                                         style: TextStyle(
-                                            fontSize: 10.5,
+                                            fontSize: 11,
                                             fontWeight: FontWeight.w700,
                                             color: p.stok <= 0
                                                 ? ZK.rose

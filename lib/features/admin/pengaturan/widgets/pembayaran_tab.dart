@@ -104,7 +104,7 @@ class _PembayaranTabViewState extends State<_PembayaranTabView> {
                                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: fg)),
                             const SizedBox(height: 2),
                             Text('QRIS statis: pelanggan scan, kasir konfirmasi manual.',
-                                style: TextStyle(fontSize: 11.5, color: muted)),
+                                style: TextStyle(fontSize: 12, color: muted)),
                           ],
                         ),
                       ),
@@ -112,7 +112,7 @@ class _PembayaranTabViewState extends State<_PembayaranTabView> {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                             color: s.isActive ? (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50) : ZK.rose50,
-                            borderRadius: BorderRadius.circular(999)),
+                            borderRadius: BorderRadius.circular(6)),
                         child: Text(s.isActive ? 'Aktif' : 'Nonaktif',
                             style: TextStyle(
                                 fontSize: 11,
@@ -155,7 +155,7 @@ class _PembayaranTabViewState extends State<_PembayaranTabView> {
                             ),
                             const SizedBox(height: 6),
                             Text('Format jpg, jpeg, png, webp. Maks 2MB.',
-                                style: TextStyle(fontSize: 10.5, color: muted)),
+                                style: TextStyle(fontSize: 11, color: muted)),
                           ],
                         ),
                       ),
@@ -189,7 +189,7 @@ class _PembayaranTabViewState extends State<_PembayaranTabView> {
                             children: [
                               Text('Aktifkan QRIS',
                                   style: TextStyle(
-                                      fontSize: 13.5, fontWeight: FontWeight.w700, color: dark ? Colors.white : ZK.slate600)),
+                                      fontSize: 14, fontWeight: FontWeight.w700, color: dark ? Colors.white : ZK.slate600)),
                               Text('Jika nonaktif, metode QRIS tidak tersedia di kasir.',
                                   style: TextStyle(fontSize: 11, color: muted)),
                             ],

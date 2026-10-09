@@ -185,7 +185,7 @@ class _AdminVarianView extends StatelessWidget {
                               child: OutlinedButton.icon(
                                 onPressed: () => _kelolaOpsi(context, g),
                                 icon: const Icon(Icons.tune, size: 15),
-                                label: const Text('Kelola opsi', style: TextStyle(fontSize: 12.5)),
+                                label: const Text('Kelola opsi', style: TextStyle(fontSize: 13)),
                                 style: OutlinedButton.styleFrom(
                                     foregroundColor: ZK.primary,
                                     side: const BorderSide(color: ZK.brand200),
@@ -209,7 +209,7 @@ class _AdminVarianView extends StatelessWidget {
   Widget _badge(String text, Color bg, Color fg) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         margin: const EdgeInsets.only(top: 6),
-        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
-        child: Text(text, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: fg)),
+        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
+        child: Text(text, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
       );
 }

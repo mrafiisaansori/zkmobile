@@ -229,10 +229,10 @@ class _AdminMemberPageState extends State<AdminMemberPage> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
-                                          color: softBg(ZK.rose, ZK.rose50, dark), borderRadius: BorderRadius.circular(999)),
+                                          color: softBg(ZK.rose, ZK.rose50, dark), borderRadius: BorderRadius.circular(6)),
                                       child: const Text('Nonaktif',
                                           style: TextStyle(
-                                              fontSize: 10.5, fontWeight: FontWeight.w700, color: ZK.rose)),
+                                              fontSize: 11, fontWeight: FontWeight.w700, color: ZK.rose)),
                                     ),
                                   ],
                                 ],

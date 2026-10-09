@@ -10,7 +10,7 @@ import '../cubit/cart_state.dart';
 import '../data/pos_repository.dart';
 import '../models/cart_item.dart';
 import '../models/tagihan.dart';
-import 'sheet_common.dart';
+import '../../../shared/widgets/sheet_common.dart';
 import 'success_sheet.dart';
 import 'total_card.dart';
 
@@ -270,7 +270,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                       style: TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w700, color: dark ? Colors.white : ZK.ink)),
                   Text(m == null ? 'Ketuk untuk pilih member' : 'Ketuk untuk ganti atau lepas member',
-                      style: TextStyle(fontSize: 11.5, color: dark ? Colors.white60 : ZK.slate600)),
+                      style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate600)),
                 ],
               ),
             ),
@@ -327,7 +327,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
   late bool _extraOpen = context.read<CartCubit>().state.voucher != null;
 
   Widget _extraSection(bool dark, CartState cart) {
-    final fg = dark ? Colors.white70 : const Color(0xFF334155);
+    final fg = dark ? Colors.white70 : ZK.slate700;
     return Container(
       decoration: BoxDecoration(
         borderRadius: r12,

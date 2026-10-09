@@ -636,11 +636,11 @@ class _PosView extends StatelessWidget {
                 .push(MaterialPageRoute(builder: (_) => const FailedTransactionsPage()));
             pos._trySyncOffline();
           },
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(6),
           child: Container(
             height: 24,
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(color: ZK.amber50, borderRadius: BorderRadius.circular(999)),
+            decoration: BoxDecoration(color: softBg(ZK.amber700, ZK.amber50, Theme.of(context).brightness == Brightness.dark), borderRadius: BorderRadius.circular(6)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -696,7 +696,7 @@ class _PosView extends StatelessWidget {
 
   Widget _pill(IconData icon, String text, Color bg, Color fg) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -778,7 +778,7 @@ class _PosView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
               color: active ? ZK.primary : (dark ? ZK.cardDark : Colors.white),
-              borderRadius: BorderRadius.circular(999),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: active ? ZK.primary : (dark ? ZK.lineDark : ZK.brand200)),
             ),
             child: Text(label,
