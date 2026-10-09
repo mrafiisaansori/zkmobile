@@ -2,12 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import '../cubit/cart_cubit.dart';
+import '../cubit/cart_state.dart';
+import 'member_row.dart';
 import '../../../shared/widgets/sheet_common.dart';
 
 // ===== Form open bill (simpan / ubah data bill) =====
 class BillFormSheet extends StatefulWidget {
   final String customer, table, note;
-  const BillFormSheet({super.key, this.customer = '', this.table = '', this.note = ''});
+  final bool edit;
+  // Pilih/ganti member bill (PRO). null = baris member tidak ditampilkan.
+  final VoidCallback? onPickMember;
+  const BillFormSheet(
+      {super.key,
+      this.customer = '',
+      this.table = '',
+      this.note = '',
+      this.edit = false,
+      this.onPickMember});
   @override
   State<BillFormSheet> createState() => _BillFormSheetState();
 }
@@ -39,7 +50,7 @@ class _BillFormSheetState extends State<BillFormSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SheetHeader(
-                  title: widget.customer.isEmpty ? 'Simpan sebagai Open Bill' : 'Ubah data bill',
+                  title: widget.edit ? 'Ubah data bill' : 'Simpan sebagai Open Bill',
                   subtitle: '$count item akan disimpan',
                   icon: Icons.assignment_outlined),
               Divider(height: 1, color: dark ? ZK.lineDark : ZK.brand100),
@@ -48,6 +59,18 @@ class _BillFormSheetState extends State<BillFormSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (widget.onPickMember != null) ...[
+                      const FieldLabel('Member (opsional)'),
+                      // Nama bill ikut terisi dari member bila masih kosong.
+                      BlocListener<CartCubit, CartState>(
+                        listenWhen: (p, c) => p.member?.id != c.member?.id,
+                        listener: (_, c) {
+                          if (c.member != null && _c.text.trim().isEmpty) _c.text = c.member!.nama;
+                        },
+                        child: MemberRow(onTap: widget.onPickMember),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
                     const FieldLabel('Nama pelanggan / nama bill'),
                     TextField(
                         controller: _c,

@@ -12,6 +12,7 @@ import '../data/pos_repository.dart';
 import '../models/cart_item.dart';
 import '../models/tagihan.dart';
 import '../../../shared/widgets/sheet_common.dart';
+import 'member_row.dart';
 import 'success_sheet.dart';
 import 'total_card.dart';
 
@@ -151,7 +152,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (widget.onPickMember != null) ...[_memberRow(dark, cart), const SizedBox(height: 12)],
+                        if (widget.onPickMember != null) ...[MemberRow(onTap: _loading ? null : widget.onPickMember), const SizedBox(height: 12)],
                         TotalCard(t: t, tax: widget.tax),
                         const SizedBox(height: 16),
                         ..._metodeSection(dark, cols: 2),
@@ -218,7 +219,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (widget.onPickMember != null) ...[_memberRow(dark, cart), const SizedBox(height: 12)],
+                      if (widget.onPickMember != null) ...[MemberRow(onTap: _loading ? null : widget.onPickMember), const SizedBox(height: 12)],
                       TotalCard(t: t, tax: widget.tax),
                       const SizedBox(height: 16),
                       ..._metodeSection(dark, cols: 3),
@@ -237,46 +238,6 @@ class _PaymentSheetState extends State<PaymentSheet> {
               _footer(dark, t),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // Member transaksi ini (sama dengan baris member di keranjang).
-  Widget _memberRow(bool dark, CartState cart) {
-    final m = cart.member;
-    return InkWell(
-      onTap: _loading ? null : widget.onPickMember,
-      borderRadius: r12,
-      child: Container(
-        height: 52,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: dark ? ZK.primary.withValues(alpha: 0.14) : ZK.brand50,
-          borderRadius: r12,
-          border: Border.all(color: dark ? ZK.primary.withValues(alpha: 0.35) : ZK.brand100),
-        ),
-        child: Row(
-          children: [
-            Icon(m == null ? Icons.person_add_alt : Icons.person, size: 20, color: ZK.primary),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(m?.nama ?? 'Tanpa member',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w700, color: dark ? Colors.white : ZK.ink)),
-                  Text(m == null ? 'Ketuk untuk pilih member' : 'Ketuk untuk ganti atau lepas member',
-                      style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate600)),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right, color: dark ? Colors.white60 : ZK.slate400),
-          ],
         ),
       ),
     );

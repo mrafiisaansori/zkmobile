@@ -3,7 +3,11 @@ class BillContext {
   final int id;
   final String? noBill;
   String customerName, tableNo, note;
-  BillContext(this.id, this.noBill, this.customerName, this.tableNo, this.note);
+  // Member yang tersimpan di server untuk bill ini, untuk tahu apakah
+  // pilihan member di keranjang belum disimpan.
+  int? savedMemberId;
+  BillContext(this.id, this.noBill, this.customerName, this.tableNo, this.note,
+      [this.savedMemberId]);
 }
 
 class CartResult {

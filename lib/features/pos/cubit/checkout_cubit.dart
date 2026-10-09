@@ -57,7 +57,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     // sama amannya diantre seperti checkout tunai biasa.
     if (bill != null) {
       final body = _repo.payBillBody(
-          idJenisBayar: metode.id, bayar: bayar, diskon: diskon, keterangan: keterangan, memberId: memberId);
+          idJenisBayar: metode.id, bayar: bayar, diskon: diskon, keterangan: keterangan);
       try {
         return await _repo.postCheckout('/open-bill/${bill.id}/pay', body);
       } catch (e) {
@@ -159,8 +159,9 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required String table,
     required String note,
     required List<CartItem> items,
+    int? memberId,
   }) async {
-    final body = _repo.billBody(customer, table, note, items);
+    final body = _repo.billBody(customer, table, note, items, memberId);
     try {
       await _repo.createBillRaw(body);
       return BillSaveResult.saved;
@@ -176,9 +177,9 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     }
   }
 
-  Future<OpenBill> updateBill(
-          int id, String customer, String table, String note, List<CartItem> items) =>
-      _repo.updateBill(id, customer, table, note, items);
+  Future<OpenBill> updateBill(int id, String customer, String table, String note,
+          List<CartItem> items, int? memberId) =>
+      _repo.updateBill(id, customer, table, note, items, memberId);
 
   Future<void> cancelBill(int id) => _repo.cancelBill(id);
 

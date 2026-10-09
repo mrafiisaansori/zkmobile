@@ -223,7 +223,7 @@ class _OpenBillViewState extends State<_OpenBillView> {
                               padding: pad,
                               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                                   maxCrossAxisExtent: 360,
-                                  mainAxisExtent: 92,
+                                  mainAxisExtent: 112, // cukup untuk nama, member, no bill, catatan
                                   mainAxisSpacing: 10,
                                   crossAxisSpacing: 10),
                               children: cards,
@@ -351,6 +351,19 @@ class _OpenBillViewState extends State<_OpenBillView> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.ink)),
+        if (b.member != null || b.memberId != null)
+          Row(
+            children: [
+              const Icon(Icons.person, size: 13, color: ZK.primary),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(b.member == null ? 'Member' : 'Member · ${b.member!.nama}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: ZK.primary)),
+              ),
+            ],
+          ),
         Text(
             [
               if (b.noBill != null) b.noBill!,

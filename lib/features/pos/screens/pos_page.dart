@@ -188,10 +188,16 @@ class _PosPageState extends State<PosPage> {
     if (m != null) cartCubit.setMember(m.id == -1 ? null : m);
   }
 
-  void _openPayment() {
+  Future<void> _openPayment() async {
     if (!_requireShift()) return;
-    final cart = context.read<CartCubit>().state;
+    var cart = context.read<CartCubit>().state;
     if (cart.items.isEmpty) return;
+    // Backend memakai member yang TERSIMPAN di bill saat dibayar: simpan dulu
+    // bila member di keranjang sudah diganti tapi belum disimpan.
+    if (cart.billMode && cart.member?.id != cart.bill!.savedMemberId) {
+      if (!await _updateBill() || !mounted) return;
+      cart = context.read<CartCubit>().state;
+    }
     if (_catalog.state.jenisBayar.isEmpty) {
       toastError(context, 'Metode pembayaran belum tersedia');
       return;
@@ -203,8 +209,8 @@ class _PosPageState extends State<PosPage> {
       isPro: _isPro,
       onConfirm: _checkout,
       onSaveBill: cart.billMode ? null : _saveBill,
-      // Bayar open bill belum menyimpan member di backend (audit #20), jadi
-      // pilihan member hanya untuk transaksi langsung.
+      // Mode bill: backend memakai member yang tersimpan di bill saat dibayar,
+      // jadi member diubah lewat keranjang/form bill, bukan di sini.
       onPickMember: _isPro && !cart.billMode ? _pickMember : null,
     );
     if (isTablet(context)) {
@@ -274,7 +280,8 @@ class _PosPageState extends State<PosPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       // Nama bill terisi otomatis dari member yang dipilih (masih bisa diubah).
-      builder: (_) => BillFormSheet(customer: cartCubit.state.member?.nama ?? ''),
+      builder: (_) => BillFormSheet(
+          customer: cartCubit.state.member?.nama ?? '', onPickMember: _isPro ? _pickMember : null),
     );
     if (data == null) return;
     try {
@@ -283,6 +290,7 @@ class _PosPageState extends State<PosPage> {
         table: data['table'] ?? '',
         note: data['note'] ?? '',
         items: cartCubit.state.items,
+        memberId: cartCubit.state.member?.id,
       );
       cartCubit.clear();
       if (!mounted) return;
@@ -304,22 +312,30 @@ class _PosPageState extends State<PosPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => BillFormSheet(customer: b.customerName, table: b.tableNo, note: b.note),
+      builder: (_) => BillFormSheet(
+          customer: b.customerName,
+          table: b.tableNo,
+          note: b.note,
+          edit: true,
+          onPickMember: _isPro ? _pickMember : null),
     );
     if (data == null) return;
     cartCubit.setBillMeta(customer: data['customer'], table: data['table'], note: data['note']);
   }
 
-  Future<void> _updateBill() async {
+  Future<bool> _updateBill() async {
     final cartCubit = context.read<CartCubit>();
     final b = cartCubit.state.bill;
-    if (b == null || cartCubit.state.items.isEmpty) return;
+    if (b == null || cartCubit.state.items.isEmpty) return false;
     try {
-      await _checkoutCubit.updateBill(b.id, b.customerName, b.tableNo, b.note, cartCubit.state.items);
-      if (!mounted) return;
-      toastOk(context, 'Perubahan bill tersimpan');
+      final memberId = cartCubit.state.member?.id;
+      await _checkoutCubit.updateBill(b.id, b.customerName, b.tableNo, b.note, cartCubit.state.items, memberId);
+      b.savedMemberId = memberId;
+      if (mounted) toastOk(context, 'Perubahan bill tersimpan');
+      return true;
     } catch (e) {
       if (mounted) toastError(context, e);
+      return false;
     }
   }
 
@@ -671,10 +687,19 @@ class _PosView extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Ikon kartu member bila bill punya member; nama member ditulis
+          // terpisah hanya kalau berbeda dari nama pelanggan.
           Flexible(
-            child: _pill(Icons.person, b.customerName.isEmpty ? 'Tanpa nama' : b.customerName,
-                ZK.primary, Colors.white),
+            child: _pill(cart.member != null ? Icons.card_membership : Icons.person,
+                b.customerName.isEmpty ? 'Tanpa nama' : b.customerName, ZK.primary, Colors.white),
           ),
+          if (cart.member != null && cart.member!.nama != b.customerName) ...[
+            const SizedBox(width: 6),
+            Flexible(
+              child: _pill(Icons.card_membership, cart.member!.nama,
+                  dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand100, ZK.primary),
+            ),
+          ],
           const SizedBox(width: 6),
           _pill(Icons.tag, 'Meja ${b.tableNo.isEmpty ? '-' : b.tableNo}',
               dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand100, ZK.primary),

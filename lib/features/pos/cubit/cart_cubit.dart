@@ -94,7 +94,8 @@ class CartCubit extends Cubit<CartState> {
     emit(CartState(
       items: items,
       bill: BillContext(b.id, b.noBill, b.customerName ?? '', b.tableNo ?? '',
-          b.note ?? ''),
+          b.note ?? '', b.member?.id),
+      member: b.member,
     ));
   }
 

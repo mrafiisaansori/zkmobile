@@ -86,10 +86,12 @@ class PosRepository {
 
   // Publik supaya bisa dipakai ulang buat antrean offline (lihat
   // CheckoutCubit.saveBill).
+  // member_id selalu dikirim (angka atau null) supaya edit bill bisa melepas member.
   Map<String, dynamic> billBody(
-          String customer, String table, String note, List<CartItem> items) =>
+          String customer, String table, String note, List<CartItem> items, int? memberId) =>
       {
         'customer_name': customer,
+        'member_id': memberId,
         'table_no': table,
         'note': note,
         'items': [
@@ -103,21 +105,18 @@ class PosRepository {
       await apiPost('/open-bill', body);
 
   Future<OpenBill> updateBill(int id, String customer, String table, String note,
-          List<CartItem> items) async =>
-      OpenBill.fromJson(await apiPut('/open-bill/$id', billBody(customer, table, note, items)));
+          List<CartItem> items, int? memberId) async =>
+      OpenBill.fromJson(await apiPut('/open-bill/$id', billBody(customer, table, note, items, memberId)));
 
   Future<void> cancelBill(int id) async => await apiPost('/open-bill/$id/cancel');
 
   Map<String, dynamic> payBillBody(
-          {required int idJenisBayar, required int bayar, int diskon = 0, String? keterangan, int? memberId}) =>
+          {required int idJenisBayar, required int bayar, int diskon = 0, String? keterangan}) =>
       {
         'id_jenis_bayar': idJenisBayar,
         'bayar': bayar,
         'diskon': diskon,
         if (keterangan != null && keterangan.isNotEmpty) 'keterangan': keterangan,
-        // Nama field sama dengan checkout biasa; belum dipastikan backend
-        // /open-bill/:id/pay memakainya (field tak dikenal tidak ditolak).
-        if (memberId != null) 'member_id': memberId,
       };
 
   Future<CheckoutResult> payBill(int id,

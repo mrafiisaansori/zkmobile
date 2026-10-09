@@ -75,7 +75,7 @@ class CartSheet extends StatelessWidget {
                   ),
           ),
           Divider(height: 1, color: dark ? ZK.lineDark : ZK.brand100),
-          if (isPro && !cart.billMode) _memberRow(context, cart, dark),
+          if (isPro) _memberRow(context, cart, dark),
           Expanded(
             child: cart.items.isEmpty
                 ? const EmptyState(
