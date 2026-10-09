@@ -58,8 +58,10 @@ class RSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Rata tengah: tombol trailing (mis. "Lihat semua") lebih tinggi dari
+          // teks judul; rata atas membuatnya turun dan menyisakan celah.
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
