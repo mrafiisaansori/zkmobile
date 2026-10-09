@@ -196,18 +196,31 @@ class _PosPageState extends State<PosPage> {
       toastError(context, 'Metode pembayaran belum tersedia');
       return;
     }
+    final sheet = PaymentSheet(
+      jenisBayar: _catalog.state.jenisBayar,
+      tax: _catalog.state.tax,
+      qris: _catalog.state.qris,
+      isPro: _isPro,
+      onConfirm: _checkout,
+      onSaveBill: cart.billMode ? null : _saveBill,
+    );
+    if (isTablet(context)) {
+      showDialog<void>(
+        context: context,
+        builder: (_) => Dialog(
+          clipBehavior: Clip.antiAlias,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+          child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 820, maxHeight: 600), child: sheet),
+        ),
+      );
+      return;
+    }
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => PaymentSheet(
-        jenisBayar: _catalog.state.jenisBayar,
-        tax: _catalog.state.tax,
-        qris: _catalog.state.qris,
-        isPro: _isPro,
-        onConfirm: _checkout,
-        onSaveBill: cart.billMode ? null : _saveBill,
-      ),
+      builder: (_) => sheet,
     );
   }
 

@@ -122,8 +122,78 @@ class _PaymentSheetState extends State<PaymentSheet> {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final cart = context.watch<CartCubit>().state;
     final t = _t(cart);
-    final total = t.total;
-    final tunai = _metode.isTunai;
+    final tablet = isTablet(context);
+    final header = SheetHeader(
+      title: 'Pembayaran',
+      subtitle: 'Pilih metode & nominal',
+      icon: Icons.payments_outlined,
+      action: widget.onSaveBill == null ? null : _moreMenu(),
+    );
+    final divider = Divider(height: 1, color: dark ? ZK.lineDark : ZK.brand100);
+
+    // Tablet: dibuka sebagai Dialog (PosPage._openPayment), 2 kolom 5:6.
+    if (tablet) {
+      return Column(
+        children: [
+          header,
+          divider,
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TotalCard(t: t, tax: widget.tax),
+                        const SizedBox(height: 16),
+                        ..._metodeSection(dark, cols: 2),
+                        const SizedBox(height: 16),
+                        _extraSection(dark, cart),
+                      ],
+                    ),
+                  ),
+                ),
+                VerticalDivider(width: 1, color: dark ? ZK.lineDark : ZK.brand100),
+                Expanded(
+                  flex: 6,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: _metode.isTunai
+                                ? [
+                                    ..._uangSection(dark, t.total, autofocus: false, quickCols: 4),
+                                    const SizedBox(height: 12),
+                                    _numpad(dark),
+                                  ]
+                                : [
+                                    if (_metode.isQris) _qrisBox(),
+                                    const SizedBox(height: 12),
+                                    Text('Pembayaran non-tunai dianggap pas sesuai total.',
+                                        style: TextStyle(
+                                            fontSize: 13, color: dark ? Colors.white60 : ZK.slate500)),
+                                  ],
+                          ),
+                        ),
+                      ),
+                      _footer(dark, t),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
@@ -131,138 +201,266 @@ class _PaymentSheetState extends State<PaymentSheet> {
         decoration: sheetBox(dark),
         child: SafeArea(
           top: false,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SheetHeader(
-                    title: 'Pembayaran', subtitle: 'Pilih metode & nominal', icon: Icons.payments_outlined),
-                Divider(height: 1, color: dark ? ZK.lineDark : ZK.brand100),
-                Padding(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              header,
+              divider,
+              // Flexible (bukan Expanded) supaya sheet tetap setinggi isinya
+              // bila muat, dan footer menempel di atas keyboard.
+              Flexible(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       TotalCard(t: t, tax: widget.tax),
                       const SizedBox(height: 16),
-                      const FieldLabel('Metode pembayaran'),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final j in widget.jenisBayar) _metodeChip(j, dark),
-                        ],
-                      ),
+                      ..._metodeSection(dark, cols: 3),
                       if (_metode.isQris) _qrisBox(),
-                      const SizedBox(height: 16),
-                      const FieldLabel('Kode voucher (opsional)'),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _voucher,
-                              textCapitalization: TextCapitalization.characters,
-                              style: TextStyle(color: dark ? Colors.white : ZK.ink),
-                              decoration: sheetInput('mis. DISKON10', dark: dark),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            height: 47,
-                            child: OutlinedButton(
-                              onPressed: _cekVoucher ? null : _applyVoucher,
-                              style: OutlinedButton.styleFrom(
-                                  foregroundColor: ZK.primary,
-                                  side: const BorderSide(color: ZK.brand200),
-                                  shape: const RoundedRectangleBorder(borderRadius: r12)),
-                              child: _cekVoucher
-                                  ? const SizedBox(
-                                      height: 16,
-                                      width: 16,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: ZK.primary))
-                                  : const Text('Pakai'),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (tunai) ...[
+                      if (_metode.isTunai) ...[
                         const SizedBox(height: 16),
-                        const FieldLabel('Uang diterima'),
-                        TextField(
-                          controller: _bayar,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.right,
-                          autofocus: true,
-                          inputFormatters: [RupiahInputFormatter()],
-                          onChanged: (_) => setState(() {}),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.slate900),
-                          decoration: sheetInput('0', prefix: 'Rp  ', dark: dark),
-                        ),
-                        const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            _quickBtn('Uang pas', total, dark),
-                            for (final q in quick) _quickBtn(rupiah(q), q, dark),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        KembalianBox(selisih: t.kembalian(_bayarNum)),
+                        ..._uangSection(dark, t.total, autofocus: true, quickCols: 3),
                       ],
-                      const SizedBox(height: 14),
-                      const FieldLabel('Keterangan (opsional)'),
-                      TextField(
-                          controller: _ket,
-                          style: TextStyle(color: dark ? Colors.white : ZK.ink),
-                          decoration: sheetInput('mis. pesanan take away', dark: dark)),
-                      const SizedBox(height: 18),
-                      SizedBox(
-                        height: 50,
-                        child: FilledButton(
-                          onPressed: _loading ? null : _submit,
-                          style: FilledButton.styleFrom(
-                              backgroundColor: ZK.primary, shape: const RoundedRectangleBorder(borderRadius: r12)),
-                          child: _loading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : Text('Bayar ${rupiah(total)}',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                        ),
-                      ),
-                      if (widget.onSaveBill != null) ...[
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          height: 46,
-                          child: OutlinedButton.icon(
-                            onPressed: _loading
-                                ? null
-                                : () {
-                                    Navigator.pop(context);
-                                    widget.onSaveBill!();
-                                  },
-                            icon: const Icon(Icons.assignment_outlined, size: 17),
-                            label: const Text('Simpan sebagai Open Bill',
-                                style: TextStyle(fontWeight: FontWeight.w700)),
-                            style: OutlinedButton.styleFrom(
-                                foregroundColor: ZK.primary,
-                                side: const BorderSide(color: ZK.brand200),
-                                shape: const RoundedRectangleBorder(borderRadius: r12)),
-                          ),
-                        ),
-                      ],
+                      const SizedBox(height: 16),
+                      _extraSection(dark, cart),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              _footer(dark, t),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _moreMenu() => PopupMenuButton<String>(
+        enabled: !_loading,
+        icon: const Icon(Icons.more_vert),
+        onSelected: (_) {
+          Navigator.pop(context);
+          widget.onSaveBill!();
+        },
+        itemBuilder: (_) => const [
+          PopupMenuItem(
+            value: 'bill',
+            child: Row(children: [
+              Icon(Icons.assignment_outlined, size: 18, color: ZK.primary),
+              SizedBox(width: 10),
+              Text('Simpan sebagai Open Bill'),
+            ]),
+          ),
+        ],
+      );
+
+  // Grid non-scroll dengan tinggi tile tetap.
+  Widget _grid(int cols, double height, List<Widget> children) => GridView(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: cols, mainAxisExtent: height, mainAxisSpacing: 8, crossAxisSpacing: 8),
+        children: children,
+      );
+
+  List<Widget> _metodeSection(bool dark, {required int cols}) => [
+        const FieldLabel('Metode pembayaran'),
+        _grid(cols, 48, [for (final j in widget.jenisBayar) _metodeTile(j, dark)]),
+      ];
+
+  List<Widget> _uangSection(bool dark, int total, {required bool autofocus, required int quickCols}) => [
+        const FieldLabel('Uang diterima'),
+        TextField(
+          controller: _bayar,
+          keyboardType: TextInputType.number,
+          textAlign: TextAlign.right,
+          autofocus: autofocus,
+          inputFormatters: [RupiahInputFormatter()],
+          onChanged: (_) => setState(() {}),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.slate900),
+          decoration: sheetInput('0', prefix: 'Rp  ', dark: dark),
+        ),
+        const SizedBox(height: 10),
+        _grid(quickCols, 44, [
+          _quickBtn('Uang pas', dark, () => _setBayar(total)),
+          for (final q in quick) _quickBtn(rupiah(q), dark, () => _setBayar(q)),
+          _quickBtn('Hapus', dark, () => setState(_bayar.clear)),
+        ]),
+      ];
+
+  void _setBayar(int v) => setState(() => _bayar.text = v == 0 ? '' : rupiahPlain(v));
+
+  // Voucher & keterangan jarang dipakai → dilipat; terbuka sendiri bila voucher terpasang.
+  late bool _extraOpen = context.read<CartCubit>().state.voucher != null;
+
+  Widget _extraSection(bool dark, CartState cart) {
+    final fg = dark ? Colors.white70 : const Color(0xFF334155);
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: r12,
+        border: Border.all(color: dark ? ZK.lineDark : ZK.brand100),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InkWell(
+            borderRadius: r12,
+            onTap: () => setState(() => _extraOpen = !_extraOpen),
+            child: SizedBox(
+              height: 44,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  children: [
+                    Icon(Icons.local_offer_outlined, size: 18, color: fg),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                          cart.voucher == null
+                              ? 'Voucher & keterangan'
+                              : 'Voucher ${cart.voucher!.kode} & keterangan',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: fg)),
+                    ),
+                    Icon(_extraOpen ? Icons.expand_less : Icons.expand_more, color: fg),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            alignment: Alignment.topCenter,
+            child: !_extraOpen
+                ? const SizedBox(width: double.infinity)
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const FieldLabel('Kode voucher (opsional)'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _voucher,
+                                textCapitalization: TextCapitalization.characters,
+                                style: TextStyle(color: dark ? Colors.white : ZK.ink),
+                                decoration: sheetInput('mis. DISKON10', dark: dark),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              height: 47,
+                              child: OutlinedButton(
+                                onPressed: _cekVoucher ? null : _applyVoucher,
+                                style: OutlinedButton.styleFrom(
+                                    foregroundColor: ZK.primary,
+                                    side: const BorderSide(color: ZK.brand200),
+                                    shape: const RoundedRectangleBorder(borderRadius: r12)),
+                                child: _cekVoucher
+                                    ? const SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(strokeWidth: 2, color: ZK.primary))
+                                    : const Text('Pakai'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        const FieldLabel('Keterangan (opsional)'),
+                        TextField(
+                            controller: _ket,
+                            style: TextStyle(color: dark ? Colors.white : ZK.ink),
+                            decoration: sheetInput('mis. pesanan take away', dark: dark)),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Footer selalu terlihat: kembalian (tunai saja) + tombol Bayar.
+  Widget _footer(bool dark, Tagihan t) {
+    final kembali = t.kembalian(_bayarNum);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: dark ? ZK.cardDark : Colors.white,
+        border: Border(top: BorderSide(color: dark ? ZK.lineDark : ZK.brand100)),
+      ),
+      child: Row(
+        children: [
+          if (_metode.isTunai) ...[
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(kembali < 0 ? 'Kurang' : 'Kembalian',
+                    style: TextStyle(fontSize: 11, color: dark ? Colors.white60 : ZK.slate500)),
+                Text(rupiah(kembali.abs()),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: kembali >= 0 ? const Color(0xFF10B981) : ZK.rose)),
+              ],
+            ),
+            const SizedBox(width: 12),
+          ],
+          Expanded(
+            child: SizedBox(
+              height: 52,
+              child: FilledButton(
+                onPressed: _loading ? null : _submit,
+                style: FilledButton.styleFrom(
+                    backgroundColor: ZK.primary, shape: const RoundedRectangleBorder(borderRadius: r12)),
+                child: _loading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : FittedBox(
+                        child: Text('Bayar ${rupiah(t.total)}',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Numpad tablet: 1–9, 000, 0, ⌫ — mengubah field "Uang diterima".
+  Widget _numpad(bool dark) {
+    void tap(String k) {
+      final digits = _bayarNum == 0 ? '' : '$_bayarNum';
+      final next = k == '⌫' ? (digits.isEmpty ? '' : digits.substring(0, digits.length - 1)) : digits + k;
+      _setBayar(int.tryParse(next) ?? 0);
+    }
+
+    return _grid(3, 56, [
+      for (final k in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '000', '0', '⌫'])
+        Material(
+          color: dark ? ZK.cardDark : ZK.brand50,
+          borderRadius: r12,
+          child: InkWell(
+            borderRadius: r12,
+            onTap: () => tap(k),
+            child: Center(
+              child: k == '⌫'
+                  ? Icon(Icons.backspace_outlined, color: dark ? Colors.white70 : ZK.ink)
+                  : Text(k,
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.ink)),
+            ),
+          ),
+        ),
+    ]);
   }
 
   // QRIS statis: tampilkan gambar QR merchant agar pelanggan bisa scan.
@@ -298,19 +496,22 @@ class _PaymentSheetState extends State<PaymentSheet> {
     );
   }
 
-  Widget _metodeChip(JenisBayar j, bool dark) {
+  Widget _metodeTile(JenisBayar j, bool dark) {
     final aktif = j.id == _metode.id;
     return InkWell(
       onTap: () => setState(() => _metode = j),
-      borderRadius: BorderRadius.circular(999),
+      borderRadius: r12,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: aktif ? ZK.primary : (dark ? ZK.cardDark : Colors.white),
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: r12,
           border: Border.all(color: aktif ? ZK.primary : (dark ? ZK.lineDark : ZK.brand200)),
         ),
         child: Text(j.nama,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -319,18 +520,23 @@ class _PaymentSheetState extends State<PaymentSheet> {
     );
   }
 
-  Widget _quickBtn(String label, int nominal, bool dark) => InkWell(
-        onTap: () => setState(() => _bayar.text = rupiahPlain(nominal)),
-        borderRadius: BorderRadius.circular(999),
+  Widget _quickBtn(String label, bool dark, VoidCallback onTap) => InkWell(
+        onTap: onTap,
+        borderRadius: r12,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: dark ? ZK.cardDark : Colors.white,
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: r12,
             border: Border.all(color: dark ? ZK.lineDark : ZK.brand200),
           ),
-          child: Text(label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: ZK.primary)),
+          child: FittedBox(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text(label,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: ZK.primary)),
+            ),
+          ),
         ),
       );
 }
