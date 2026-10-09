@@ -73,12 +73,18 @@ class Session {
 
   static Future<void> save(String t, Map<String, dynamic> u, {bool persist = true}) async {
     final sp = await SharedPreferences.getInstance();
+    // Pilihan "Ingat saya" ikut diingat; username hanya disimpan bila dicentang
+    // (perangkat bersama tidak menampilkan akun kasir sebelumnya). Password
+    // tidak pernah disimpan.
+    await sp.setBool('remember_me', persist);
     if (persist) {
       await sp.setString('token', t);
       await sp.setString('user', jsonEncode(u));
+      await sp.setString('last_username', '${u['username'] ?? ''}');
     } else {
       await sp.remove('token');
       await sp.remove('user');
+      await sp.remove('last_username');
     }
     token = t;
     user = User.fromJson(u);
@@ -93,6 +99,12 @@ class Session {
     await sp.remove('last_active');
     token = null;
     user = null;
+  }
+
+  // Isian awal form login: pilihan terakhir (default dicentang) + username terakhir.
+  static Future<(bool remember, String username)> loginPrefs() async {
+    final sp = await SharedPreferences.getInstance();
+    return (sp.getBool('remember_me') ?? true, sp.getString('last_username') ?? '');
   }
 
   static bool get isPro => user?.isPro ?? false;

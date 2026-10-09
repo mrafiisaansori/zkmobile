@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/network/api_client.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../../boot/screens/splash_page.dart';
@@ -28,6 +29,19 @@ class _LoginFormState extends State<_LoginForm> {
   final _user = TextEditingController();
   final _pass = TextEditingController();
   bool _showPass = false, _remember = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pilihan "Ingat saya" terakhir + username terakhir (bila dulu dicentang).
+    Session.loginPrefs().then((p) {
+      if (!mounted) return;
+      setState(() {
+        _remember = p.$1;
+        if (_user.text.isEmpty) _user.text = p.$2;
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -245,27 +259,36 @@ class _LoginFormState extends State<_LoginForm> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Checkbox(
-                      value: _remember,
-                      activeColor: ZK.primary,
-                      visualDensity: VisualDensity.compact,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      onChanged: (v) => setState(() => _remember = v ?? true),
+                  // Kotak + tulisan satu area ketuk setinggi 44px.
+                  InkWell(
+                    borderRadius: r12,
+                    onTap: () => setState(() => _remember = !_remember),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 44),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Checkbox(
+                              value: _remember,
+                              activeColor: ZK.primary,
+                              visualDensity: VisualDensity.compact,
+                              onChanged: (v) => setState(() => _remember = v ?? true),
+                            ),
+                            Text('Ingat saya',
+                                style: TextStyle(
+                                    fontSize: 13, color: dark ? Colors.white70 : ZK.slate500)),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text('Ingat saya',
-                      style: TextStyle(
-                          fontSize: 13, color: dark ? Colors.white70 : ZK.slate500)),
                   const Spacer(),
                   TextButton(
                     style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(0, 0),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        minimumSize: const Size(0, 44)),
                     onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const ForgotPasswordPage())),
                     child: const Text('Lupa Password?',

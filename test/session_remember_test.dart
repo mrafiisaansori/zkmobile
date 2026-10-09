@@ -31,6 +31,36 @@ void main() {
     expect(Session.user, isNull);
   });
 
+  test('form login pertama kali: tercentang, username kosong', () async {
+    final p = await Session.loginPrefs();
+    expect(p.$1, isTrue);
+    expect(p.$2, '');
+  });
+
+  test('dicentang: pilihan & username terakhir diingat untuk form login', () async {
+    await Session.save('tok', user, persist: true);
+    await Session.clear(); // logout
+    final p = await Session.loginPrefs();
+    expect(p.$1, isTrue);
+    expect(p.$2, 'kasir');
+  });
+
+  test('tidak dicentang: pilihan diingat, username tidak', () async {
+    await Session.save('tok', user, persist: true);
+    await Session.save('tok', user, persist: false);
+    final p = await Session.loginPrefs();
+    expect(p.$1, isFalse);
+    expect(p.$2, '');
+  });
+
+  test('password tidak pernah disimpan', () async {
+    await Session.save('tok', user, persist: true);
+    final sp = await SharedPreferences.getInstance();
+    for (final k in sp.getKeys()) {
+      expect(k.toLowerCase().contains('pass'), isFalse, reason: 'kunci $k');
+    }
+  });
+
   test('tidak dicentang menghapus sesi lama yang sebelumnya diingat', () async {
     await Session.save('lama', user, persist: true);
     await Session.save('baru', user, persist: false);
