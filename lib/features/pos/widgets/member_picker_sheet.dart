@@ -78,7 +78,11 @@ class _MemberPickerSheetState extends State<MemberPickerSheet> {
                       ? const EmptyState(
                           title: 'Member tidak ditemukan',
                           description: 'Tambah member lewat aplikasi web.')
-                      : ListView.builder(
+                      // Material transparan: ListTile butuh Material terdekat di
+                      // atas latar sheet, kalau tidak efek ketuknya tak terlihat.
+                      : Material(
+                          type: MaterialType.transparency,
+                          child: ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           itemCount: _data.length,
                           itemBuilder: (_, i) {
@@ -99,6 +103,7 @@ class _MemberPickerSheetState extends State<MemberPickerSheet> {
                               trailing: aktif ? const Icon(Icons.check_circle, color: ZK.primary) : null,
                             );
                           },
+                        ),
                         ),
             ),
             Padding(

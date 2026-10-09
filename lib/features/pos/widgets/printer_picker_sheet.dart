@@ -102,7 +102,10 @@ class _PrinterPickerSheetState extends State<PrinterPickerSheet> {
               )
             else
               Flexible(
-                child: ListView.builder(
+                // Material transparan agar efek ketuk ListTile tidak tertutup latar sheet.
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: ListView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: _devices.length,
@@ -116,6 +119,7 @@ class _PrinterPickerSheetState extends State<PrinterPickerSheet> {
                       onTap: () => _print(d),
                     );
                   },
+                ),
                 ),
               ),
             if (_printing)
