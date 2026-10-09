@@ -203,6 +203,7 @@ class _PosPageState extends State<PosPage> {
       isPro: _isPro,
       onConfirm: _checkout,
       onSaveBill: cart.billMode ? null : _saveBill,
+      onPickMember: _isPro ? _pickMember : null,
     );
     if (isTablet(context)) {
       showDialog<void>(

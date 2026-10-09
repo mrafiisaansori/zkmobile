@@ -22,6 +22,8 @@ class PaymentSheet extends StatefulWidget {
   final bool isPro;
   final Future<CheckoutResult> Function(JenisBayar, int, String) onConfirm;
   final VoidCallback? onSaveBill;
+  // Pilih/ganti member (PRO). null = baris member tidak ditampilkan.
+  final VoidCallback? onPickMember;
   const PaymentSheet({
     super.key,
     required this.jenisBayar,
@@ -30,6 +32,7 @@ class PaymentSheet extends StatefulWidget {
     required this.isPro,
     required this.onConfirm,
     this.onSaveBill,
+    this.onPickMember,
   });
   @override
   State<PaymentSheet> createState() => _PaymentSheetState();
@@ -127,7 +130,6 @@ class _PaymentSheetState extends State<PaymentSheet> {
       title: 'Pembayaran',
       subtitle: 'Pilih metode & nominal',
       icon: Icons.payments_outlined,
-      action: widget.onSaveBill == null ? null : _moreMenu(),
     );
     final divider = Divider(height: 1, color: dark ? ZK.lineDark : ZK.brand100);
 
@@ -148,6 +150,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        if (widget.onPickMember != null) ...[_memberRow(dark, cart), const SizedBox(height: 12)],
                         TotalCard(t: t, tax: widget.tax),
                         const SizedBox(height: 16),
                         ..._metodeSection(dark, cols: 2),
@@ -214,13 +217,15 @@ class _PaymentSheetState extends State<PaymentSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (widget.onPickMember != null) ...[_memberRow(dark, cart), const SizedBox(height: 12)],
                       TotalCard(t: t, tax: widget.tax),
                       const SizedBox(height: 16),
                       ..._metodeSection(dark, cols: 3),
                       if (_metode.isQris) _qrisBox(),
                       if (_metode.isTunai) ...[
                         const SizedBox(height: 16),
-                        ..._uangSection(dark, t.total, autofocus: true, quickCols: 3),
+                        // Tidak autofocus: keyboard baru muncul saat kasir mengetuk field.
+                        ..._uangSection(dark, t.total, autofocus: false, quickCols: 3),
                       ],
                       const SizedBox(height: 16),
                       _extraSection(dark, cart),
@@ -236,24 +241,50 @@ class _PaymentSheetState extends State<PaymentSheet> {
     );
   }
 
-  Widget _moreMenu() => PopupMenuButton<String>(
-        enabled: !_loading,
-        icon: const Icon(Icons.more_vert),
-        onSelected: (_) {
-          Navigator.pop(context);
-          widget.onSaveBill!();
-        },
-        itemBuilder: (_) => const [
-          PopupMenuItem(
-            value: 'bill',
-            child: Row(children: [
-              Icon(Icons.assignment_outlined, size: 18, color: ZK.primary),
-              SizedBox(width: 10),
-              Text('Simpan sebagai Open Bill'),
-            ]),
-          ),
-        ],
-      );
+  // Member transaksi ini (sama dengan baris member di keranjang).
+  Widget _memberRow(bool dark, CartState cart) {
+    final m = cart.member;
+    return InkWell(
+      onTap: _loading ? null : widget.onPickMember,
+      borderRadius: r12,
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: dark ? ZK.primary.withValues(alpha: 0.14) : ZK.brand50,
+          borderRadius: r12,
+          border: Border.all(color: dark ? ZK.primary.withValues(alpha: 0.35) : ZK.brand100),
+        ),
+        child: Row(
+          children: [
+            Icon(m == null ? Icons.person_add_alt : Icons.person, size: 20, color: ZK.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(m?.nama ?? 'Tanpa member',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w700, color: dark ? Colors.white : ZK.ink)),
+                  Text(m == null ? 'Ketuk untuk pilih member' : 'Ketuk untuk ganti atau lepas member',
+                      style: TextStyle(fontSize: 11.5, color: dark ? Colors.white60 : ZK.slate600)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: dark ? Colors.white38 : ZK.slate400),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _saveBill() {
+    Navigator.pop(context);
+    widget.onSaveBill!();
+  }
 
   // Grid non-scroll dengan tinggi tile tetap.
   Widget _grid(int cols, double height, List<Widget> children) => GridView(
@@ -410,6 +441,29 @@ class _PaymentSheetState extends State<PaymentSheet> {
               ],
             ),
             const SizedBox(width: 12),
+          ],
+          // Simpan sebagai open bill: terlihat langsung, bukan di menu tersembunyi.
+          if (widget.onSaveBill != null) ...[
+            SizedBox(
+              height: 52,
+              child: OutlinedButton(
+                onPressed: _loading ? null : _saveBill,
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: ZK.primary,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    side: const BorderSide(color: ZK.brand200),
+                    shape: const RoundedRectangleBorder(borderRadius: r12)),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.assignment_outlined, size: 18),
+                    SizedBox(height: 2),
+                    Text('Simpan Bill', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
           ],
           Expanded(
             child: SizedBox(
