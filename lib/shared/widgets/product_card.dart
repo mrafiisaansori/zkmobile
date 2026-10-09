@@ -20,9 +20,9 @@ class ProductCard extends StatelessWidget {
             ? (softBg(ZK.amber700, ZK.amber50, dark), ZK.amber700)
             : (softBg(ZK.primary, ZK.brand50, dark), dark ? ZK.brand200 : ZK.brand700);
 
-    return Opacity(
-      opacity: habis ? 0.6 : 1,
-      child: Material(
+    // Produk habis: cuma fotonya yang diredupkan + label "Habis"; nama & harga
+    // tetap kontras penuh supaya masih terbaca.
+    return Material(
         color: dark ? ZK.cardDark : Colors.white,
         borderRadius: r12,
         child: InkWell(
@@ -32,13 +32,16 @@ class ProductCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               borderRadius: r12,
-              border: Border.all(color: habis ? (dark ? ZK.lineDark : ZK.line) : ZK.brand200),
+              border: Border.all(
+                  color: habis || dark ? (dark ? ZK.lineDark : ZK.line) : ZK.brand200),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Center(
+                  child: Opacity(
+                    opacity: habis ? 0.45 : 1,
+                    child: Center(
                     child: produk.foto == null
                         ? const Icon(Icons.inventory_2_outlined,
                             size: 40, color: ZK.slate400)
@@ -48,6 +51,7 @@ class ProductCard extends StatelessWidget {
                                 Icons.inventory_2_outlined,
                                 size: 40,
                                 color: ZK.slate400)),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -65,7 +69,9 @@ class ProductCard extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: bg, borderRadius: BorderRadius.circular(6)),
                   child: Text(
-                      'Stok ${produk.stok}${produk.satuan != null ? ' ${produk.satuan}' : ''}',
+                      habis
+                          ? 'Habis'
+                          : 'Stok ${produk.stok}${produk.satuan != null ? ' ${produk.satuan}' : ''}',
                       style: TextStyle(
                           fontSize: 11, fontWeight: FontWeight.w600, color: fg)),
                 ),
@@ -97,7 +103,6 @@ class ProductCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

@@ -77,6 +77,7 @@ class _FailedTransactionsPageState extends State<FailedTransactionsPage> {
     return Scaffold(
       backgroundColor: dark ? ZK.bgDark : ZK.background,
       body: HeroShell(
+        compact: true,
         child: SafeArea(
           top: false,
           bottom: false,

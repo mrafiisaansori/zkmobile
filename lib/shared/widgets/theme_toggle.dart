@@ -15,27 +15,22 @@ class ThemeToggle extends StatelessWidget {
           final dark = mode == ThemeMode.dark;
           final w = height * 1.9;
           final thumb = height - 6;
-          return GestureDetector(
+          // Track warna solid tanpa gradient/bayangan: toggle muncul di header
+          // setiap halaman, jadi tidak boleh lebih mencolok dari kontennya.
+          return Semantics(
+            button: true,
+            label: dark ? 'Ganti ke mode terang' : 'Ganti ke mode gelap',
+            child: GestureDetector(
             onTap: () => context.read<ThemeCubit>().toggle(),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 280),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.easeOutCubic,
               width: w,
               height: height,
               padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(height),
-                gradient: LinearGradient(
-                  colors: dark
-                      ? const [ZK.slate800, Color(0xFF0B1220)]
-                      : [ZK.primary, ZK.accent],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.28),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3)),
-                ],
+                color: dark ? ZK.slate800 : ZK.primary,
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -58,18 +53,9 @@ class ThemeToggle extends StatelessWidget {
                     child: Container(
                       height: thumb,
                       width: thumb,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 1)),
-                        ],
-                      ),
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                       child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 220),
-                        transitionBuilder: (child, anim) => RotationTransition(
-                            turns: anim,
-                            child: ScaleTransition(scale: anim, child: child)),
+                        duration: const Duration(milliseconds: 160),
                         child: Icon(
                           dark ? Icons.nightlight_round : Icons.wb_sunny_rounded,
                           key: ValueKey(dark),
@@ -81,6 +67,7 @@ class ThemeToggle extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             ),
           );
         },

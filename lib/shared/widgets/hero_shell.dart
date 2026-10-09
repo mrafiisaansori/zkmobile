@@ -20,13 +20,19 @@ class HeroShell extends StatelessWidget {
   // Tombol hamburger di header ponsel (kiri, sebelum logo) — dipakai admin
   // buat buka Drawer, karena admin punya terlalu banyak menu buat bottom nav.
   final VoidCallback? onMenuTap;
+  // Tab kerja kasir (POS, Open Bill, Sesi Kas, Riwayat): di ponsel header
+  // jadi bar ringkas warna solid tanpa ilustrasi, supaya tinggi layar dipakai
+  // untuk konten. Ilustrasi tetap di dashboard & login.
+  final bool compact;
   const HeroShell(
       {super.key,
       required this.child,
       this.titleOverride,
       this.subtitleOverride,
-      this.onMenuTap});
+      this.onMenuTap,
+      this.compact = false});
   static const _heroH = 128.0;
+  static const _compactBarH = 56.0;
   // Header tablet tetap lebih ramping dari ponsel (sidebar bawa branding
   // sendiri), tapi diberi sedikit lebih tinggi dari revisi awal.
   static const _heroHTablet = 96.0;
@@ -42,10 +48,17 @@ class HeroShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final tablet = isTablet(context);
-    final heroH = tablet ? _heroHTablet : _heroH;
+    final bar = compact && !tablet;
+    final heroH = tablet
+        ? _heroHTablet
+        : bar
+            ? MediaQuery.of(context).padding.top + _compactBarH
+            : _heroH;
     // Card konten tablet dibuat siku (tanpa rounded) — cuma ponsel yang
     // menimpa ilustrasi dengan lengkungan ala card login.
-    final radius = tablet ? BorderRadius.zero : const BorderRadius.vertical(top: Radius.circular(28));
+    final radius = tablet
+        ? BorderRadius.zero
+        : BorderRadius.vertical(top: Radius.circular(bar ? 16 : 28));
     final card = Container(
       decoration: BoxDecoration(color: dark ? ZK.cardDark : Colors.white, borderRadius: radius),
       child: ClipRRect(
@@ -62,7 +75,9 @@ class HeroShell extends StatelessWidget {
       children: [
         // Ilustrasi mengisi seluruh background, konten menimpa di atasnya.
         Positioned.fill(
-          child: Stack(
+          child: bar
+              ? const ColoredBox(color: ZK.ink)
+              : Stack(
             fit: StackFit.expand,
             children: [
               Image.asset('assets/login_illustration.jpeg',
@@ -128,23 +143,27 @@ class HeroShell extends StatelessWidget {
                 child: Image.asset('assets/logo_splash.png', height: 24, width: 24),
               ),
               const SizedBox(width: 10),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('ZONA KASIR',
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: 0.4,
-                          height: 1.1)),
-                  Text('Solusi Bisnis Anda',
-                      style: TextStyle(
-                          fontSize: 11, color: Colors.white70, fontWeight: FontWeight.w600)),
-                ],
-              ),
-              const Spacer(),
+              if (compact)
+                Expanded(child: _title(compactBar: true))
+              else ...[
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('ZONA KASIR',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: 0.4,
+                            height: 1.1)),
+                    Text('Solusi Bisnis Anda',
+                        style: TextStyle(
+                            fontSize: 11, color: Colors.white70, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+                const Spacer(),
+              ],
               const ThemeToggle(height: 30),
               const SizedBox(width: 8),
               _headerIcon(
@@ -178,36 +197,7 @@ class HeroShell extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  if (titleOverride != null)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(titleOverride!,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                        if (subtitleOverride != null)
-                          Text(subtitleOverride!,
-                              style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
-                      ],
-                    )
-                  else
-                    BlocBuilder<ActiveTabCubit, int>(
-                      builder: (_, tab) {
-                        final t = tabTitles[tab.clamp(0, tabTitles.length - 1)];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(t.$1,
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                            Text(t.$2,
-                                style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
-                          ],
-                        );
-                      },
-                    ),
+                  _title(),
                   const Spacer(),
                   Text(_now(),
                       style: const TextStyle(
@@ -219,7 +209,29 @@ class HeroShell extends StatelessWidget {
         ],
       );
 
-  static const _hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jumat", 'Sabtu', 'Minggu'];
+  // Judul halaman aktif (override, atau dari ActiveTabCubit untuk tab kasir).
+  // Bar ringkas ponsel cukup judulnya saja, tanpa subjudul.
+  Widget _title({bool compactBar = false}) {
+    Widget build(String title, String? sub) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+            if (sub != null && !compactBar)
+              Text(sub, style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+          ],
+        );
+    if (titleOverride != null) return build(titleOverride!, subtitleOverride);
+    return BlocBuilder<ActiveTabCubit, int>(builder: (_, tab) {
+      final t = tabTitles[tab.clamp(0, tabTitles.length - 1)];
+      return build(t.$1, t.$2);
+    });
+  }
+
+  static const _hari =['Senin', 'Selasa', 'Rabu', 'Kamis', "Jumat", 'Sabtu', 'Minggu'];
   static const _bulan = [
     'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
   ];
