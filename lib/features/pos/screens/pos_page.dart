@@ -203,7 +203,9 @@ class _PosPageState extends State<PosPage> {
       isPro: _isPro,
       onConfirm: _checkout,
       onSaveBill: cart.billMode ? null : _saveBill,
-      onPickMember: _isPro ? _pickMember : null,
+      // Bayar open bill belum menyimpan member di backend (audit #20), jadi
+      // pilihan member hanya untuk transaksi langsung.
+      onPickMember: _isPro && !cart.billMode ? _pickMember : null,
     );
     if (isTablet(context)) {
       showDialog<void>(
@@ -758,7 +760,10 @@ class _PosView extends StatelessWidget {
                 shape: const RoundedRectangleBorder(borderRadius: r12),
                 padding: EdgeInsets.zero,
               ),
-              child: const Icon(Icons.qr_code_scanner, size: 20),
+              // Cari produk dari barcode yang diketik atau dari scanner hardware
+              // (mode keyboard). Tidak ada pemindai kamera, jadi ikonnya bukan kamera.
+              child: const Tooltip(
+                  message: 'Cari barcode', child: Icon(Icons.keyboard_return, size: 20)),
             ),
           ),
         ],

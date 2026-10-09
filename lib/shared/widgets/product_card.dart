@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/formatters.dart';
 import '../models/models.dart';
@@ -45,9 +46,9 @@ class ProductCard extends StatelessWidget {
                     child: produk.foto == null
                         ? const Icon(Icons.inventory_2_outlined,
                             size: 40, color: ZK.slate400)
-                        : Image.network(produk.foto!,
+                        : CachedNetworkImage(imageUrl: produk.foto!,
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => const Icon(
+                            errorWidget: (_, __, ___) => const Icon(
                                 Icons.inventory_2_outlined,
                                 size: 40,
                                 color: ZK.slate400)),

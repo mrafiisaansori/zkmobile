@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_theme.dart';
 
 // Gambar produk dengan fallback ikon (padanan ProductImage + productImage()).
@@ -19,9 +20,9 @@ class ProductThumb extends StatelessWidget {
                 size: size * 0.45, color: ZK.slate400)
             : ClipRRect(
                 borderRadius: r12,
-                child: Image.network(url!,
+                child: CachedNetworkImage(imageUrl: url!,
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => Icon(
+                    errorWidget: (_, __, ___) => Icon(
                         Icons.inventory_2_outlined,
                         size: size * 0.45,
                         color: ZK.slate400)),

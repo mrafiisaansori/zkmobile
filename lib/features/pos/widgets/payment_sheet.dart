@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/sound/sound_service.dart';
 import '../../../core/theme/app_theme.dart';
@@ -534,10 +535,10 @@ class _PaymentSheetState extends State<PaymentSheet> {
         decoration: BoxDecoration(color: ZK.brand50, borderRadius: r14),
         child: Column(
           children: [
-            Image.network(q.imageUrl!,
+            CachedNetworkImage(imageUrl: q.imageUrl!,
                 height: 190,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) =>
+                errorWidget: (_, __, ___) =>
                     const Text('Gambar QRIS gagal dimuat', style: TextStyle(fontSize: 12, color: ZK.slate500))),
             const SizedBox(height: 6),
             Text(q.merchantName ?? 'QRIS Merchant',
