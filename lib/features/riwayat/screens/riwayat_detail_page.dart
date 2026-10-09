@@ -15,7 +15,9 @@ import '../data/riwayat_repository.dart';
 // kirim struk WA, dan cetak struk ke printer thermal Bluetooth.
 class RiwayatDetailPage extends StatefulWidget {
   final int id;
-  const RiwayatDetailPage({super.key, required this.id});
+  // true = ditanam di panel kanan Riwayat tablet: tanpa HeroShell/kembali/judul.
+  final bool embedded;
+  const RiwayatDetailPage({super.key, required this.id, this.embedded = false});
   @override
   State<RiwayatDetailPage> createState() => _RiwayatDetailPageState();
 }
@@ -99,11 +101,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
     final muted = dark ? Colors.white70 : ZK.slate500;
     final cardColor = dark ? ZK.cardDark : Colors.white;
     final lineColor = dark ? ZK.lineDark : ZK.line;
-    final heroContent = HeroShell(
-      child: SafeArea(
-        top: false,
-        bottom: false,
-        child: _loading
+    final Widget content = _loading
             ? const Center(child: CircularProgressIndicator(color: ZK.primary))
             : t == null
                 ? Center(
@@ -111,6 +109,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                 : ListView(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                     children: [
+                      if (!widget.embedded) ...[
                       InkWell(
                         onTap: () => Navigator.of(context).pop(),
                         borderRadius: r12,
@@ -132,6 +131,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                       Text('Detail Transaksi',
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: fg)),
                       const SizedBox(height: 14),
+                      ],
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -248,9 +248,10 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                         ),
                       ),
                     ],
-                  ),
-                ),
-    );
+                  );
+    // embedded: isi saja (panel kanan master–detail Riwayat di tablet).
+    if (widget.embedded) return content;
+    final heroContent = HeroShell(child: SafeArea(top: false, bottom: false, child: content));
     // heroContent sama untuk phone & tablet, cuma chrome di sekelilingnya
     // beda. Tablet: sidebar sama seperti halaman lain di dalam shell, walau
     // halaman ini di-push di atas shell (bukan salah satu tab-nya) — jadi
