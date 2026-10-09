@@ -6,6 +6,7 @@ import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../data/transaksi_repository.dart';
+import '../../shared/widgets/report_kit.dart';
 import '../widgets/transaksi_detail_sheet.dart';
 
 // Padanan lib/admin_transaksi_page.dart lama — riwayat SELURUH kasir (beda
@@ -124,10 +125,8 @@ class _AdminTransaksiPageState extends State<AdminTransaksiPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final fg = dark ? Colors.white : ZK.ink;
-    final muted = dark ? Colors.white60 : ZK.slate500;
-    final lineColor = dark ? ZK.lineDark : ZK.line;
+    final c = RColors.of(context);
+    final periode = _rangeMode ? rangeLabel(context, _range) : dateLabel(context, _tanggal);
     return BlocProvider.value(
       value: _cubit,
       child: SafeArea(
@@ -136,69 +135,47 @@ class _AdminTransaksiPageState extends State<AdminTransaksiPage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
                 children: [
-                  _chip('Tanggal', !_rangeMode, dark, () => _setMode(false)),
+                  Expanded(child: RDateButton(label: periode, onTap: _rangeMode ? _pickRange : _pickTanggal)),
                   const SizedBox(width: 8),
-                  _chip('Rentang', _rangeMode, dark, () => _setMode(true)),
+                  RSegmented<bool>(
+                      width: 128,
+                      options: const [('Hari', false), ('Rentang', true)],
+                      selected: _rangeMode,
+                      onChanged: _setMode),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-              child: OutlinedButton.icon(
-                onPressed: _rangeMode ? _pickRange : _pickTanggal,
-                icon: const Icon(Icons.calendar_today_outlined, size: 16),
-                label: Text(
-                    _rangeMode ? '${_iso(_range.start)} → ${_iso(_range.end)}' : _iso(_tanggal),
-                    style: const TextStyle(fontSize: 12.5)),
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: dark ? ZK.cardDark : Colors.white,
-                  foregroundColor: dark ? Colors.white : ZK.primary,
-                  side: BorderSide(color: dark ? ZK.lineDark : ZK.brand200),
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  minimumSize: const Size(double.infinity, 46),
-                  shape: const RoundedRectangleBorder(borderRadius: r12),
-                ),
-              ),
+              child: RSegmented<int>(
+                  options: const [('Transaksi sah', 1), ('Dibatalkan', 0)], selected: _status, onChanged: _setStatus),
             ),
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: _statusChip('Sah', 1, dark),
-                  ),
-                  _statusChip('Batal', 0, dark),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
             Expanded(
               child: BlocBuilder<ListCubit<Penjualan>, ListState<Penjualan>>(
                 builder: (context, state) {
-                  final loading = state.status == ListStatus.loading;
-                  final loadingMore = state.status == ListStatus.loadingMore;
                   final data = state.items;
-                  if (loading) {
+                  if (state.status == ListStatus.loading || state.status == ListStatus.initial) {
                     return const Center(child: CircularProgressIndicator(color: ZK.primary));
                   }
-                  if (data.isEmpty) {
-                    return const EmptyState(
-                        icon: Icons.receipt_long_outlined,
-                        title: 'Tidak ada transaksi',
-                        description: 'Coba ubah periode atau status.');
+                  if (state.status == ListStatus.error && data.isEmpty) {
+                    return RError(message: state.error ?? 'Periksa koneksi internet.', onRetry: _cubit.load);
                   }
+                  if (data.isEmpty) {
+                    return EmptyState(
+                        icon: Icons.receipt_long_outlined,
+                        title: _status == 1 ? 'Tidak ada transaksi' : 'Tidak ada transaksi dibatalkan',
+                        description: 'Belum ada nota pada $periode. Pilih periode lain.');
+                  }
+                  final loadingMore = state.status == ListStatus.loadingMore;
                   return RefreshIndicator(
                     color: ZK.primary,
                     onRefresh: () => _cubit.load(),
                     child: ListView.builder(
                       controller: _scroll,
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                       itemCount: data.length + (loadingMore ? 1 : 0),
                       itemBuilder: (_, i) {
                         if (i >= data.length) {
@@ -211,78 +188,7 @@ class _AdminTransaksiPageState extends State<AdminTransaksiPage> {
                                     child: CircularProgressIndicator(strokeWidth: 2, color: ZK.primary))),
                           );
                         }
-                        final p = data[i];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: dark ? ZK.cardDark : Colors.white,
-                            borderRadius: r14,
-                            border: Border.all(color: lineColor),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 46,
-                                width: 46,
-                                decoration: BoxDecoration(
-                                    color: dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50,
-                                    shape: BoxShape.circle),
-                                child: const Icon(Icons.receipt_long_outlined, color: ZK.primary, size: 20),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(p.label,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 14, fontWeight: FontWeight.w800, color: fg)),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                        [
-                                          if (p.tanggal != null) p.tanggal!,
-                                          if (p.jam != null) p.jam!,
-                                          p.namaKasir ?? '-',
-                                          if (p.jenisBayar != null) p.jenisBayar!,
-                                        ].join(' · '),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 12, color: muted)),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(rupiah(p.total),
-                                      style: TextStyle(
-                                          fontSize: 14, fontWeight: FontWeight.w800, color: fg)),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                          visualDensity: VisualDensity.compact,
-                                          onPressed: () => _lihat(p),
-                                          tooltip: 'Lihat',
-                                          icon: Icon(Icons.visibility_outlined,
-                                              size: 18, color: dark ? Colors.white60 : ZK.slate500)),
-                                      if (p.status == 1)
-                                        IconButton(
-                                            visualDensity: VisualDensity.compact,
-                                            onPressed: () => _batalkan(p),
-                                            tooltip: 'Batalkan',
-                                            icon: const Icon(Icons.block, size: 18, color: ZK.rose)),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
+                        return _row(data[i], c, first: i == 0, last: i == data.length - 1);
                       },
                     ),
                   );
@@ -295,44 +201,79 @@ class _AdminTransaksiPageState extends State<AdminTransaksiPage> {
     );
   }
 
-  Widget _chip(String label, bool active, bool dark, VoidCallback onTap) => Expanded(
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              color: active ? ZK.primary : (dark ? ZK.cardDark : Colors.white),
-              borderRadius: r12,
-              border: Border.all(color: active ? ZK.primary : (dark ? ZK.lineDark : ZK.brand200)),
-            ),
-            child: Text(label,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: active ? Colors.white : (dark ? Colors.white70 : ZK.slate500))),
+  // Daftar nota sebagai satu lembar bergaris (kartu pertama/terakhir membulat),
+  // bukan tumpukan kartu terpisah — lebih mudah dipindai ke bawah.
+  Widget _row(Penjualan p, RColors c, {required bool first, required bool last}) {
+    final jam = (p.jam ?? '').length >= 5 ? p.jam!.substring(0, 5) : (p.jam ?? '');
+    return Container(
+      decoration: BoxDecoration(
+        color: c.card,
+        border: Border(
+          left: BorderSide(color: c.line),
+          right: BorderSide(color: c.line),
+          top: BorderSide(color: c.line),
+          bottom: last ? BorderSide(color: c.line) : BorderSide.none,
+        ),
+        borderRadius: BorderRadius.vertical(
+            top: first ? const Radius.circular(14) : Radius.zero,
+            bottom: last ? const Radius.circular(14) : Radius.zero),
+      ),
+      child: InkWell(
+        onTap: () => _lihat(p),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 10, 4, 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(p.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.fg)),
+                    const SizedBox(height: 2),
+                    Text(
+                        [
+                          if (_rangeMode && p.tanggal != null) p.tanggal!,
+                          if (jam.isNotEmpty) jam,
+                          p.namaKasir ?? '-',
+                        ].join(' · '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: c.muted)),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(rupiah(p.total),
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: p.status == 1 ? c.fg : c.muted,
+                          decoration: p.status == 1 ? null : TextDecoration.lineThrough,
+                          fontFeatures: tabular)),
+                  if (p.jenisBayar != null)
+                    Text(p.jenisBayar!, style: TextStyle(fontSize: 11.5, color: c.muted)),
+                ],
+              ),
+              PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, size: 20, color: c.muted),
+                onSelected: (v) => v == 'void' ? _batalkan(p) : _lihat(p),
+                itemBuilder: (_) => [
+                  const PopupMenuItem(value: 'lihat', child: Text('Lihat detail')),
+                  if (p.status == 1)
+                    const PopupMenuItem(
+                        value: 'void',
+                        child: Text('Batalkan transaksi',
+                            style: TextStyle(fontWeight: FontWeight.w700, color: ZK.rose))),
+                ],
+              ),
+            ],
           ),
         ),
-      );
-
-  Widget _statusChip(String label, int status, bool dark) {
-    final active = _status == status;
-    return GestureDetector(
-      onTap: () => _setStatus(status),
-      child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        height: 32,
-        decoration: BoxDecoration(
-          color: active ? ZK.primary : (dark ? ZK.cardDark : Colors.white),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: active ? ZK.primary : (dark ? ZK.lineDark : ZK.brand200)),
-        ),
-        child: Text(label,
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: active ? Colors.white : (dark ? Colors.white70 : ZK.slate500))),
       ),
     );
   }

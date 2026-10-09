@@ -4,12 +4,13 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../shared/widgets/report_kit.dart';
 import '../cubit/laporan_closing_cubit.dart';
 import '../data/laporan_closing_repository.dart';
 
 // Padanan src/app/admin/laporan/closing/page.tsx — rekap sesi kas SELURUH
-// kasir per hari beserta selisihnya (beda dari features/closing/ yang
-// dipakai KASIR untuk buka/tutup kas sesi miliknya sendiri).
+// kasir per hari. Fokus halaman: apakah uang di laci cocok (selisih kas),
+// lalu rumus per sesi: modal + tunai = seharusnya, dibanding uang dihitung.
 class AdminClosingPage extends StatelessWidget {
   const AdminClosingPage({super.key});
 
@@ -23,24 +24,21 @@ class AdminClosingPage extends StatelessWidget {
 class _AdminClosingView extends StatelessWidget {
   const _AdminClosingView();
 
-  String _iso(DateTime d) => d.toIso8601String().substring(0, 10);
-
   String _fmtJam(String? iso) {
-    if (iso == null) return '-';
-    final d = DateTime.tryParse(iso);
+    final d = iso == null ? null : DateTime.tryParse(iso);
     if (d == null) return '-';
     return '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
   }
 
   String _selisihText(int? v) {
-    if (v == null) return '-';
+    if (v == null) return 'Belum dihitung';
     if (v == 0) return 'Pas';
     return v < 0 ? 'Kurang ${rupiah(-v)}' : 'Lebih ${rupiah(v)}';
   }
 
-  Color _selisihColor(int? v, bool dark) {
-    if (v == null) return dark ? Colors.white54 : ZK.slate400;
-    if (v == 0) return dark ? Colors.greenAccent : const Color(0xFF047857);
+  Color? _selisihColor(int? v) {
+    if (v == null) return null;
+    if (v == 0) return okGreen;
     return v < 0 ? ZK.rose : ZK.amber700;
   }
 
@@ -57,15 +55,11 @@ class _AdminClosingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final fg = dark ? Colors.white : ZK.ink;
-    final muted = dark ? Colors.white70 : ZK.slate500;
     return BlocConsumer<LaporanClosingCubit, LaporanClosingState>(
       listenWhen: (prev, curr) => curr.error != null && curr.error != prev.error,
       listener: (context, state) => toastError(context, state.error!),
       builder: (context, state) {
         final r = state.report;
-        final selisihTotal = r?.totalSelisihCash ?? 0;
         return SafeArea(
           top: false,
           bottom: false,
@@ -73,91 +67,19 @@ class _AdminClosingView extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                child: OutlinedButton.icon(
-                  onPressed: () => _pickTanggal(context, state.tanggal),
-                  icon: const Icon(Icons.calendar_today_outlined, size: 16),
-                  label: Text(_iso(state.tanggal), style: const TextStyle(fontSize: 12.5)),
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: dark ? ZK.cardDark : Colors.white,
-                    foregroundColor: dark ? Colors.white : ZK.primary,
-                    side: BorderSide(color: dark ? ZK.lineDark : ZK.brand200),
-                    padding: const EdgeInsets.symmetric(vertical: 13),
-                    minimumSize: const Size(double.infinity, 46),
-                    shape: const RoundedRectangleBorder(borderRadius: r12),
-                  ),
-                ),
+                child: RDateButton(
+                    label: dateLabel(context, state.tanggal), onTap: () => _pickTanggal(context, state.tanggal)),
               ),
               Expanded(
                 child: state.loading
                     ? const Center(child: CircularProgressIndicator(color: ZK.primary))
-                    : RefreshIndicator(
-                        color: ZK.primary,
-                        onRefresh: () => context.read<LaporanClosingCubit>().load(),
-                        child: Builder(builder: (context) {
-                          // Tablet: Row of Expanded (tinggi ikut konten), bukan
-                          // GridView beraspek-rasio tetap — di layar lebar itu
-                          // bikin sel jauh lebih tinggi dari kontennya.
-                          final cards = [
-                            _statCard('Total Penjualan Tunai', rupiah(r?.totalCashSales ?? 0),
-                                Icons.payments_outlined, const Color(0xFF047857), dark),
-                            _statCard('Total Non-Tunai', rupiah(r?.totalNonCashSales ?? 0),
-                                Icons.credit_card_outlined, ZK.primary, dark),
-                            _statCard('Total Omzet', rupiah(r?.totalOmzet ?? 0),
-                                Icons.account_balance_wallet_outlined, ZK.primary, dark),
-                            _statCard('Selisih Kas Hari Ini', _selisihText(selisihTotal),
-                                Icons.balance_outlined, _selisihColor(selisihTotal, dark), dark),
-                          ];
-                          final statRow = isTablet(context)
-                              ? IntrinsicHeight(
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      for (var i = 0; i < cards.length; i++) ...[
-                                        if (i > 0) const SizedBox(width: 10),
-                                        Expanded(child: cards[i]),
-                                      ],
-                                    ],
-                                  ),
-                                )
-                              : GridView.count(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 10,
-                                  crossAxisSpacing: 10,
-                                  childAspectRatio: 1.6,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: cards,
-                                );
-                          return ListView(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                            children: [
-                              statRow,
-                              const SizedBox(height: 14),
-                              Text('${r?.jumlahShift ?? 0} sesi kasir pada tanggal ini.',
-                                  style: TextStyle(fontSize: 13, color: muted)),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    color: dark ? ZK.cardDark : ZK.background, borderRadius: r12),
-                                child: Text(
-                                    'Uang Seharusnya = Modal Awal + Penjualan Tunai. Selisih = Uang Dihitung − Uang Seharusnya.',
-                                    style: TextStyle(fontSize: 11, color: muted)),
-                              ),
-                              const SizedBox(height: 12),
-                              if ((r?.shift ?? []).isEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 24),
-                                  child: Text('Belum ada sesi kas pada tanggal ini',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 13, color: muted)),
-                                )
-                              else
-                                for (final s in r!.shift) _shiftCard(s, dark, fg, muted),
-                            ],
-                          );
-                        }),
-                      ),
+                    : r == null && state.error != null
+                        ? RError(message: state.error!, onRetry: () => context.read<LaporanClosingCubit>().load())
+                        : RefreshIndicator(
+                            color: ZK.primary,
+                            onRefresh: () => context.read<LaporanClosingCubit>().load(),
+                            child: _body(context, r),
+                          ),
               ),
             ],
           ),
@@ -166,106 +88,80 @@ class _AdminClosingView extends StatelessWidget {
     );
   }
 
-  Widget _statCard(String label, String value, IconData icon, Color tone, bool dark) => Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: dark ? ZK.cardDark : Colors.white,
-          borderRadius: r14,
-          border: Border.all(color: dark ? ZK.lineDark : ZK.line),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 20, color: tone),
-            const SizedBox(height: 6),
-            Text(value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.ink)),
-            Text(label,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 10.5, color: dark ? Colors.white60 : ZK.slate500)),
-          ],
-        ),
-      );
+  Widget _body(BuildContext context, DailyReport? r) {
+    final shifts = r?.shift ?? const <DailyReportRow>[];
+    final tablet = isTablet(context);
+    final selisih = r?.totalSelisihCash ?? 0;
+    final hero = RHero(
+      label: 'Selisih kas semua sesi',
+      value: shifts.isEmpty ? '-' : _selisihText(selisih),
+      valueColor: shifts.isEmpty ? null : _selisihColor(selisih),
+      facts: [
+        ('Tunai', rupiah(r?.totalCashSales ?? 0)),
+        ('Non-tunai', rupiah(r?.totalNonCashSales ?? 0)),
+        ('Omzet', rupiah(r?.totalOmzet ?? 0)),
+      ],
+      footnote: 'Uang seharusnya = modal awal + penjualan tunai. Selisih = uang dihitung − uang seharusnya.',
+    );
+    final cards = [for (final s in shifts) _shiftCard(context, s)];
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
+      children: [
+        hero,
+        const SizedBox(height: 18),
+        Text(shifts.isEmpty ? 'Sesi kasir' : '${shifts.length} sesi kasir',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: RColors.of(context).fg)),
+        const SizedBox(height: 10),
+        if (shifts.isEmpty)
+          const RCard(child: RNote('Tidak ada kasir yang membuka sesi kas pada tanggal ini.'))
+        else if (tablet)
+          LayoutBuilder(
+            builder: (context, cons) => Wrap(
+              spacing: 14,
+              runSpacing: 14,
+              children: [for (final w in cards) SizedBox(width: (cons.maxWidth - 14) / 2, child: w)],
+            ),
+          )
+        else
+          for (final w in cards) Padding(padding: const EdgeInsets.only(bottom: 14), child: w),
+      ],
+    );
+  }
 
-  Widget _shiftCard(DailyReportRow s, bool dark, Color fg, Color muted) => Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: dark ? ZK.cardDark : Colors.white,
-          borderRadius: r14,
-          border: Border.all(color: dark ? ZK.lineDark : ZK.line),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(s.kasir ?? '-',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: fg)),
-                      Text(
-                          '${s.station ?? 'Tanpa laci'} · ${_fmtJam(s.bukaAt)}–${s.status == 'OPEN' ? 'kini' : _fmtJam(s.tutupAt)}',
-                          style: TextStyle(fontSize: 11.5, color: muted)),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                      color: s.status == 'OPEN'
-                          ? ZK.amber50
-                          : (dark ? ZK.primary.withValues(alpha: 0.16) : const Color(0xFFECFDF5)),
-                      borderRadius: BorderRadius.circular(999)),
-                  child: Text(s.status == 'OPEN' ? 'BUKA' : 'SELESAI',
-                      style: TextStyle(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w700,
-                          color: s.status == 'OPEN'
-                              ? ZK.amber700
-                              : (dark ? Colors.greenAccent : const Color(0xFF047857)))),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: _kv('Modal Awal', rupiah(s.modalAwal), fg, muted)),
-                Expanded(child: _kv('Tunai', rupiah(s.cashSales), fg, muted)),
-                Expanded(child: _kv('Non-Tunai', s.nonCashSales > 0 ? rupiah(s.nonCashSales) : '—', fg, muted)),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Expanded(child: _kv('Seharusnya', rupiah(s.expectedCash), fg, muted)),
-                Expanded(
-                    child: _kv(
-                        'Dihitung', s.actualCash == null ? '—' : rupiah(s.actualCash!), fg, muted)),
-                Expanded(
-                  child: _kv('Selisih', _selisihText(s.selisihCash), fg, muted,
-                      valueColor: _selisihColor(s.selisihCash, dark)),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-
-  Widget _kv(String label, String value, Color fg, Color muted, {Color? valueColor}) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _shiftCard(BuildContext context, DailyReportRow s) {
+    final c = RColors.of(context);
+    final buka = s.status == 'OPEN';
+    return RCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(label, style: TextStyle(fontSize: 10.5, color: muted)),
-          Text(value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: valueColor ?? fg)),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(s.kasir ?? '-', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.fg)),
+                    const SizedBox(height: 2),
+                    Text('${s.station ?? 'Tanpa laci'} · ${_fmtJam(s.bukaAt)}–${buka ? 'sekarang' : _fmtJam(s.tutupAt)}',
+                        style: TextStyle(fontSize: 12, color: c.muted)),
+                  ],
+                ),
+              ),
+              RTag(buka ? 'Masih buka' : 'Ditutup', buka ? ZK.amber700 : c.muted),
+            ],
+          ),
+          const SizedBox(height: 8),
+          RLedger([
+            RLine('Modal awal', rupiah(s.modalAwal)),
+            RLine('Penjualan tunai', '+ ${rupiah(s.cashSales)}'),
+            RLine('Uang seharusnya', rupiah(s.expectedCash), strong: true),
+            RLine('Uang dihitung', s.actualCash == null ? 'Belum dihitung' : rupiah(s.actualCash!)),
+            RLine('Selisih', _selisihText(s.selisihCash), valueColor: _selisihColor(s.selisihCash)),
+            if (s.nonCashSales > 0) RLine('Non-tunai (di luar laci)', rupiah(s.nonCashSales)),
+          ]),
         ],
-      );
+      ),
+    );
+  }
 }
