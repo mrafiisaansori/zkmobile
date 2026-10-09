@@ -205,17 +205,31 @@ class _OpenBillViewState extends State<_OpenBillView> {
                           title: 'Belum ada open bill',
                           description: 'Simpan keranjang sebagai bill dari halaman Kasir.');
                     }
+                    final cards = [
+                      if (state.status == 'OPEN')
+                        for (final p in state.pendingBills) _pendingCard(context, p, dark),
+                      for (final b in state.data) _card(context, b, dark),
+                    ];
+                    const pad = EdgeInsets.fromLTRB(16, 10, 16, 20);
                     return RefreshIndicator(
                       color: ZK.primary,
                       onRefresh: () => context.read<OpenBillCubit>().refresh(),
-                      child: ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
-                        children: [
-                          if (state.status == 'OPEN')
-                            for (final p in state.pendingBills) _pendingCard(context, p, dark),
-                          for (final b in state.data) _card(context, b, dark),
-                        ],
-                      ),
+                      child: isTablet(context)
+                          ? GridView(
+                              padding: pad,
+                              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 360,
+                                  mainAxisExtent: 92,
+                                  mainAxisSpacing: 10,
+                                  crossAxisSpacing: 10),
+                              children: cards,
+                            )
+                          : ListView.separated(
+                              padding: pad,
+                              itemCount: cards.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 10),
+                              itemBuilder: (_, i) => cards[i],
+                            ),
                     );
                   },
                 ),
@@ -227,138 +241,134 @@ class _OpenBillViewState extends State<_OpenBillView> {
     );
   }
 
+  // Kerangka kartu bill: ubin kiri 52×52 · isi · kanan · menu ⋮. Tap kartu = buka.
+  Widget _billCard({
+    required bool dark,
+    required Widget tile,
+    required Color tileBg,
+    required List<Widget> body,
+    Widget? trailing,
+    VoidCallback? onTap,
+    VoidCallback? onCancel,
+    Color? border,
+  }) =>
+      Material(
+        color: dark ? ZK.cardDark : Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: r14, side: BorderSide(color: border ?? (dark ? ZK.lineDark : ZK.line))),
+        child: InkWell(
+          borderRadius: r14,
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
+            child: Row(
+              children: [
+                Container(
+                  height: 52,
+                  width: 52,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(color: tileBg, borderRadius: r12),
+                  child: tile,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: body,
+                  ),
+                ),
+                if (trailing != null) ...[const SizedBox(width: 8), trailing],
+                if (onCancel != null)
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: dark ? Colors.white60 : ZK.slate500),
+                    onSelected: (_) => onCancel(),
+                    itemBuilder: (_) => const [
+                      PopupMenuItem(
+                          value: 'cancel',
+                          child: Text('Batalkan',
+                              style: TextStyle(fontWeight: FontWeight.w700, color: ZK.rose))),
+                    ],
+                  )
+                else
+                  const SizedBox(width: 8),
+              ],
+            ),
+          ),
+        ),
+      );
+
   Widget _pendingCard(BuildContext context, QueuedSale q, bool dark) {
     final rejected = q.status == 'failed';
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: dark ? ZK.cardDark : Colors.white,
-        borderRadius: r14,
-        border: Border.all(color: rejected ? ZK.rose.withValues(alpha: 0.3) : ZK.amber700.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(rejected ? Icons.error_outline : Icons.cloud_off,
-                  size: 16, color: rejected ? ZK.rose : ZK.amber700),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(q.label,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: dark ? Colors.white : ZK.ink)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-              rejected
-                  ? 'Ditolak server: ${q.errorMessage ?? '-'}'
-                  : 'Belum tersinkron ke server — buka untuk tambah item / bayar sekarang.',
-              style: TextStyle(
-                  fontSize: 12,
-                  color: rejected ? ZK.rose : (dark ? Colors.white60 : ZK.slate500))),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              const Spacer(),
-              OutlinedButton(
-                onPressed: () => _hapusPending(context, q),
-                style: OutlinedButton.styleFrom(
-                    foregroundColor: ZK.rose,
-                    side: const BorderSide(color: Color(0xFFFECDD3)),
-                    shape: const RoundedRectangleBorder(borderRadius: r12)),
-                child: const Text('Batalkan'),
-              ),
-              const SizedBox(width: 8),
-              FilledButton(
-                onPressed: () => _bukaPending(context, q),
-                style: FilledButton.styleFrom(
-                    backgroundColor: ZK.primary,
-                    shape: const RoundedRectangleBorder(borderRadius: r12)),
-                child: const Text('Buka'),
-              ),
-            ],
-          ),
-        ],
-      ),
+    final tone = rejected ? ZK.rose : ZK.amber700;
+    return _billCard(
+      dark: dark,
+      border: tone.withValues(alpha: 0.3),
+      tileBg: rejected ? ZK.rose50 : ZK.amber50,
+      tile: Icon(rejected ? Icons.error_outline : Icons.cloud_off, color: tone),
+      onTap: () => _bukaPending(context, q),
+      onCancel: () => _hapusPending(context, q),
+      body: [
+        Text(q.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.ink)),
+        Text(
+            rejected
+                ? 'Ditolak server: ${q.errorMessage ?? '-'}'
+                : 'Belum tersinkron — ketuk untuk tambah item / bayar.',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, color: rejected ? ZK.rose : (dark ? Colors.white60 : ZK.slate500))),
+      ],
     );
   }
 
   Widget _card(BuildContext context, OpenBill b, bool dark) {
     final aktif = b.status == 'OPEN';
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: dark ? ZK.cardDark : Colors.white,
-        borderRadius: r14,
-        border: Border.all(color: dark ? ZK.lineDark : ZK.line),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    final meja = b.tableNo?.isNotEmpty == true ? b.tableNo! : '–';
+    return _billCard(
+      dark: dark,
+      tileBg: dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50,
+      tile: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                    b.customerName?.isNotEmpty == true
-                        ? b.customerName!
-                        : 'Tanpa nama',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: dark ? Colors.white : ZK.ink)),
-              ),
-              _statusBadge(b.status, dark),
-            ],
+          const Text('MEJA', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: ZK.brand700)),
+          FittedBox(
+            child: Text(meja,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: ZK.primary)),
           ),
-          const SizedBox(height: 3),
-          Text(
-              [
-                if (b.noBill != null) b.noBill!,
-                'Meja ${b.tableNo?.isNotEmpty == true ? b.tableNo : '-'}',
-                if (b.kasir != null) b.kasir!,
-              ].join(' · '),
-              style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate500)),
-          if (b.note != null) ...[
-            const SizedBox(height: 4),
-            Text(b.note!,
-                style: const TextStyle(fontSize: 12, color: ZK.primary)),
-          ],
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Text(rupiah(b.total),
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      color: dark ? Colors.white : ZK.slate900)),
-              const Spacer(),
-              if (aktif) ...[
-                OutlinedButton(
-                  onPressed: () => _batalkan(context, b),
-                  style: OutlinedButton.styleFrom(
-                      foregroundColor: ZK.rose,
-                      side: const BorderSide(color: Color(0xFFFECDD3)),
-                      shape: const RoundedRectangleBorder(borderRadius: r12)),
-                  child: const Text('Batalkan'),
-                ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: () => _buka(context, b),
-                  style: FilledButton.styleFrom(
-                      backgroundColor: ZK.primary,
-                      shape: const RoundedRectangleBorder(borderRadius: r12)),
-                  child: const Text('Buka'),
-                ),
-              ],
-            ],
-          ),
+        ],
+      ),
+      onTap: aktif ? () => _buka(context, b) : null,
+      onCancel: aktif ? () => _batalkan(context, b) : null,
+      body: [
+        Text(b.customerName?.isNotEmpty == true ? b.customerName! : 'Tanpa nama',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: dark ? Colors.white : ZK.ink)),
+        Text(
+            [
+              if (b.noBill != null) b.noBill!,
+              if (b.kasir != null) b.kasir!,
+            ].join(' · '),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate500)),
+        if (b.note != null)
+          Text(b.note!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12, color: ZK.primary)),
+      ],
+      trailing: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(rupiah(b.total),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: dark ? Colors.white : ZK.slate900)),
+          const SizedBox(height: 4),
+          _statusBadge(b.status, dark),
         ],
       ),
     );
