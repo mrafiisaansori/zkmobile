@@ -77,6 +77,7 @@ class _RiwayatViewState extends State<_RiwayatView> {
                 child: SizedBox(
                   height: 46,
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Expanded(child: _dateButton(context, state, dark)),
                       const SizedBox(width: 8),
