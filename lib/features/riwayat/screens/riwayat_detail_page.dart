@@ -110,27 +110,28 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                     children: [
                       if (!widget.embedded) ...[
-                      InkWell(
-                        onTap: () => Navigator.of(context).pop(),
-                        borderRadius: r12,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.arrow_back, size: 18, color: fg),
-                              const SizedBox(width: 6),
-                              Text('Kembali',
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.w700, color: fg)),
-                            ],
+                      // Header: tombol kembali 44×44 sebaris dengan judul.
+                      Row(
+                        children: [
+                          Material(
+                            color: cardColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: r12, side: BorderSide(color: lineColor)),
+                            child: InkWell(
+                              borderRadius: r12,
+                              onTap: () => Navigator.of(context).pop(),
+                              child: SizedBox(
+                                  height: 44,
+                                  width: 44,
+                                  child: Icon(Icons.arrow_back, size: 20, color: fg, semanticLabel: 'Kembali')),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 12),
+                          Text('Detail Transaksi',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: fg)),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text('Detail Transaksi',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: fg)),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       ],
                       Container(
                         padding: const EdgeInsets.all(16),
