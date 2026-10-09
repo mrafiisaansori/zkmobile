@@ -45,22 +45,33 @@ class CartSheet extends StatelessWidget {
                 ? cart.bill!.noBill!
                 : '${cart.items.length} item dipilih',
             showClose: !embedded,
-            action: cart.items.isEmpty
+            action: cart.items.isEmpty && !cart.billMode
                 ? null
-                : TextButton(
-                    // Kosongkan isi keranjang tanpa membuang konteks bill/member —
-                    // CartCubit tidak punya method "clear items saja", jadi
-                    // dibongkar lewat remove() per baris + setDiskon(0).
-                    onPressed: () {
+                : PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (v) {
+                      if (v == 'cancel') return onCancelBill();
+                      // Kosongkan isi keranjang tanpa membuang konteks bill/member —
+                      // CartCubit tidak punya method "clear items saja", jadi
+                      // dibongkar lewat remove() per baris + setDiskon(0).
                       final cubit = context.read<CartCubit>();
                       for (final it in List<CartItem>.from(cart.items)) {
                         cubit.remove(it);
                       }
                       cubit.setDiskon(0);
                     },
-                    child: const Text('Kosongkan',
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w700, color: ZK.rose)),
+                    itemBuilder: (_) => [
+                      if (cart.items.isNotEmpty)
+                        const PopupMenuItem(
+                            value: 'clear',
+                            child: Text('Kosongkan',
+                                style: TextStyle(fontWeight: FontWeight.w700, color: ZK.rose))),
+                      if (cart.billMode)
+                        const PopupMenuItem(
+                            value: 'cancel',
+                            child: Text('Batalkan bill',
+                                style: TextStyle(fontWeight: FontWeight.w700, color: ZK.rose))),
+                    ],
                   ),
           ),
           Divider(height: 1, color: dark ? ZK.lineDark : ZK.brand100),
@@ -75,13 +86,26 @@ class CartSheet extends StatelessWidget {
                     itemCount: cart.items.length,
                     separatorBuilder: (_, __) =>
                         Divider(height: 1, color: dark ? ZK.lineDark : const Color(0xFFF1F5F9)),
-                    itemBuilder: (_, i) => _CartRow(
-                      item: cart.items[i],
-                      onQty: (q) {
+                    itemBuilder: (_, i) {
+                      void onQty(int q) {
                         final r = context.read<CartCubit>().updateQty(cart.items[i], q);
                         if (!r.ok) toastError(context, r.message!);
-                      },
-                    ),
+                      }
+
+                      return Dismissible(
+                        key: ValueKey(cart.items[i].lineId),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (_) => onQty(0),
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 16),
+                          decoration: BoxDecoration(
+                              color: dark ? ZK.rose.withValues(alpha: 0.16) : ZK.rose50, borderRadius: r12),
+                          child: const Icon(Icons.delete_outline, color: ZK.rose),
+                        ),
+                        child: _CartRow(item: cart.items[i], onQty: onQty),
+                      );
+                    },
                   ),
           ),
           _footer(context, cart),
@@ -148,7 +172,12 @@ class CartSheet extends StatelessWidget {
     final tablet = isTablet(context);
     final gapSm = tablet ? 6.0 : 10.0;
     final gapMd = tablet ? 8.0 : 12.0;
-    final btnH = tablet ? 42.0 : 44.0;
+    final btnH = tablet ? 46.0 : 52.0;
+    final empty = cart.items.isEmpty;
+    final split = _sideBtn(Icons.call_split, 'Split Bill', empty ? null : onSplitBill);
+    final simpan = billMode
+        ? _sideBtn(Icons.save_outlined, 'Simpan', empty ? null : onUpdateBill)
+        : _sideBtn(Icons.assignment_outlined, 'Simpan Bill', empty ? null : onSaveBill);
     return Container(
       padding: EdgeInsets.fromLTRB(
           16, tablet ? 8 : 12, 16, (tablet ? 8 : 12) + MediaQuery.of(context).padding.bottom),
@@ -164,12 +193,11 @@ class CartSheet extends StatelessWidget {
           if (cart.voucher != null)
             _sumRow('Voucher ${cart.voucher!.kode}', '- ${rupiah(cart.voucher!.diskon)}', dark,
                 color: ZK.rose),
-          SizedBox(height: gapSm),
-          DiskonBox(
+          _DiskonFold(
               subtotal: cart.subtotal,
               diskon: cart.diskon,
               onChanged: context.read<CartCubit>().setDiskon),
-          SizedBox(height: gapMd),
+          SizedBox(height: gapSm),
           Divider(height: 1, color: dark ? ZK.lineDark : const Color(0xFFF1F5F9)),
           SizedBox(height: gapSm),
           Row(
@@ -185,122 +213,54 @@ class CartSheet extends StatelessWidget {
           ),
           SizedBox(height: gapMd),
           SizedBox(
-            height: tablet ? 46 : 48,
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: cart.items.isEmpty ? null : onCheckout,
-              style: FilledButton.styleFrom(
-                  backgroundColor: ZK.primary, shape: const RoundedRectangleBorder(borderRadius: r12)),
-              child: Text(billMode ? 'Bayar' : 'Bayar Semua',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-            ),
-          ),
-          SizedBox(height: gapSm),
-          // Split Bill + (Simpan Bill / Simpan+Batalkan) sebaris di tablet
-          // supaya cuma makan satu baris tinggi, bukan tumpuk dua-tiga baris.
-          if (tablet)
-            Row(
+            height: btnH,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: SizedBox(
-                    height: btnH,
-                    child: OutlinedButton.icon(
-                      onPressed: cart.items.isEmpty ? null : onSplitBill,
-                      icon: const Icon(Icons.call_split, size: 16),
-                      label: const Text('Split Bill', style: TextStyle(fontSize: 12.5)),
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: ZK.primary,
-                          side: const BorderSide(color: ZK.brand200),
-                          shape: const RoundedRectangleBorder(borderRadius: r12)),
-                    ),
-                  ),
-                ),
-                if (!billMode) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SizedBox(
-                      height: btnH,
-                      child: OutlinedButton.icon(
-                        onPressed: cart.items.isEmpty ? null : onSaveBill,
-                        icon: const Icon(Icons.assignment_outlined, size: 16),
-                        label: const Text('Simpan Bill', style: TextStyle(fontSize: 12.5)),
-                        style: OutlinedButton.styleFrom(
-                            foregroundColor: ZK.primary,
-                            side: const BorderSide(color: ZK.brand200),
-                            shape: const RoundedRectangleBorder(borderRadius: r12)),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            )
-          else
-            SizedBox(
-              height: btnH,
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: cart.items.isEmpty ? null : onSplitBill,
-                icon: const Icon(Icons.call_split, size: 17),
-                label: const Text('Split Bill', style: TextStyle(fontWeight: FontWeight.w700)),
-                style: OutlinedButton.styleFrom(
-                    foregroundColor: ZK.primary,
-                    side: const BorderSide(color: ZK.brand200),
-                    shape: const RoundedRectangleBorder(borderRadius: r12)),
-              ),
-            ),
-          SizedBox(height: gapSm),
-          if (billMode)
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: btnH,
-                    child: OutlinedButton.icon(
-                      onPressed: cart.items.isEmpty ? null : onUpdateBill,
-                      icon: const Icon(Icons.save_outlined, size: 17),
-                      label: const Text('Simpan'),
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: ZK.primary,
-                          side: const BorderSide(color: ZK.brand200),
-                          shape: const RoundedRectangleBorder(borderRadius: r12)),
-                    ),
-                  ),
-                ),
+                Expanded(child: billMode ? simpan : split),
+                const SizedBox(width: 8),
+                Expanded(child: billMode ? split : simpan),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: SizedBox(
-                    height: btnH,
-                    child: OutlinedButton.icon(
-                      onPressed: onCancelBill,
-                      icon: const Icon(Icons.delete_outline, size: 17),
-                      label: const Text('Batalkan'),
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: ZK.rose,
-                          side: const BorderSide(color: Color(0xFFFECDD3)),
-                          shape: const RoundedRectangleBorder(borderRadius: r12)),
+                  flex: 2,
+                  child: FilledButton(
+                    onPressed: empty ? null : onCheckout,
+                    style: FilledButton.styleFrom(
+                        backgroundColor: ZK.primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        shape: const RoundedRectangleBorder(borderRadius: r12)),
+                    child: FittedBox(
+                      child: Text(billMode ? 'Bayar' : 'Bayar Semua',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                     ),
                   ),
                 ),
               ],
-            )
-          else if (!tablet)
-            SizedBox(
-              height: btnH,
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: cart.items.isEmpty ? null : onSaveBill,
-                icon: const Icon(Icons.assignment_outlined, size: 17),
-                label: const Text('Simpan Bill', style: TextStyle(fontWeight: FontWeight.w700)),
-                style: OutlinedButton.styleFrom(
-                    foregroundColor: ZK.primary,
-                    side: const BorderSide(color: ZK.brand200),
-                    shape: const RoundedRectangleBorder(borderRadius: r12)),
-              ),
             ),
+          ),
         ],
       ),
     );
   }
+
+  // Tombol sekunder vertikal (ikon di atas label) di baris aksi keranjang.
+  Widget _sideBtn(IconData icon, String label, VoidCallback? onTap) => OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+            foregroundColor: ZK.primary,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            side: const BorderSide(color: ZK.brand200),
+            shape: const RoundedRectangleBorder(borderRadius: r12)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18),
+            const SizedBox(height: 2),
+            FittedBox(
+                child: Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700))),
+          ],
+        ),
+      );
 
   Widget _sumRow(String label, String value, bool dark, {Color? color}) => Padding(
         padding: const EdgeInsets.only(bottom: 4),
@@ -315,6 +275,44 @@ class CartSheet extends StatelessWidget {
                     color: color ?? (dark ? Colors.white : ZK.slate900))),
           ],
         ),
+      );
+}
+
+// DiskonBox dilipat jadi "+ Tambah potongan"; terbuka bila potongan sudah ada.
+class _DiskonFold extends StatefulWidget {
+  final int subtotal, diskon;
+  final ValueChanged<int> onChanged;
+  const _DiskonFold({required this.subtotal, required this.diskon, required this.onChanged});
+  @override
+  State<_DiskonFold> createState() => _DiskonFoldState();
+}
+
+class _DiskonFoldState extends State<_DiskonFold> {
+  late bool _open = widget.diskon > 0;
+
+  @override
+  Widget build(BuildContext context) => AnimatedSize(
+        duration: const Duration(milliseconds: 200),
+        alignment: Alignment.topCenter,
+        child: _open || widget.diskon > 0
+            ? Padding(
+                padding: const EdgeInsets.only(top: 6, bottom: 4),
+                child: DiskonBox(
+                    subtotal: widget.subtotal, diskon: widget.diskon, onChanged: widget.onChanged),
+              )
+            : Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  height: 36,
+                  child: TextButton.icon(
+                    onPressed: () => setState(() => _open = true),
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Tambah potongan', style: TextStyle(fontWeight: FontWeight.w700)),
+                    style: TextButton.styleFrom(
+                        foregroundColor: ZK.accent, padding: const EdgeInsets.symmetric(horizontal: 4)),
+                  ),
+                ),
+              ),
       );
 }
 
@@ -340,27 +338,13 @@ class _CartRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(item.produk.nama,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: dark ? Colors.white : ZK.slate900)),
-                    ),
-                    InkWell(
-                      onTap: () => onQty(0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(Icons.delete_outline,
-                            size: 18, color: dark ? Colors.white38 : ZK.slate400),
-                      ),
-                    ),
-                  ],
-                ),
+                Text(item.produk.nama,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: dark ? Colors.white : ZK.slate900)),
                 if (item.modifierText != null)
                   Text(item.modifierText!,
                       maxLines: 1,
@@ -374,6 +358,7 @@ class _CartRow extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     QtyStepper(
+                        deleteAtOne: true,
                         qty: item.qty,
                         onMinus: () => onQty(item.qty - 1),
                         onPlus: () => onQty(item.qty + 1)),
