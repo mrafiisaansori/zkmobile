@@ -57,7 +57,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     // sama amannya diantre seperti checkout tunai biasa.
     if (bill != null) {
       final body = _repo.payBillBody(
-          idJenisBayar: metode.id, bayar: bayar, diskon: diskon, keterangan: keterangan);
+          idJenisBayar: metode.id, bayar: bayar, diskon: diskon, keterangan: keterangan, memberId: memberId);
       try {
         return await _repo.postCheckout('/open-bill/${bill.id}/pay', body);
       } catch (e) {

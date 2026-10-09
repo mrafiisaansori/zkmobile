@@ -109,12 +109,15 @@ class PosRepository {
   Future<void> cancelBill(int id) async => await apiPost('/open-bill/$id/cancel');
 
   Map<String, dynamic> payBillBody(
-          {required int idJenisBayar, required int bayar, int diskon = 0, String? keterangan}) =>
+          {required int idJenisBayar, required int bayar, int diskon = 0, String? keterangan, int? memberId}) =>
       {
         'id_jenis_bayar': idJenisBayar,
         'bayar': bayar,
         'diskon': diskon,
         if (keterangan != null && keterangan.isNotEmpty) 'keterangan': keterangan,
+        // Nama field sama dengan checkout biasa; belum dipastikan backend
+        // /open-bill/:id/pay memakainya (field tak dikenal tidak ditolak).
+        if (memberId != null) 'member_id': memberId,
       };
 
   Future<CheckoutResult> payBill(int id,

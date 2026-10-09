@@ -271,7 +271,8 @@ class _PosPageState extends State<PosPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const BillFormSheet(),
+      // Nama bill terisi otomatis dari member yang dipilih (masih bisa diubah).
+      builder: (_) => BillFormSheet(customer: cartCubit.state.member?.nama ?? ''),
     );
     if (data == null) return;
     try {

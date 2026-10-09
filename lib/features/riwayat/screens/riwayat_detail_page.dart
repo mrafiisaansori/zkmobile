@@ -168,9 +168,29 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                                   style: TextStyle(fontSize: 12, color: muted)),
                             ],
                             if (t.namaMember != null) ...[
-                              const SizedBox(height: 4),
-                              Text('Member: ${t.namaMember}',
-                                  style: TextStyle(fontSize: 12, color: muted)),
+                              const SizedBox(height: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                    color: dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50,
+                                    borderRadius: r12),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.person, size: 16, color: ZK.primary),
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text('Member · ${t.namaMember}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 12.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: dark ? Colors.white : ZK.brand700)),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ],
                         ),
