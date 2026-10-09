@@ -23,7 +23,7 @@ class CartCubit extends Cubit<CartState> {
         return const CartResult(false, 'Qty melebihi stok');
       }
       final items = [...state.items];
-      items[idx] = existing..qty = existing.qty + 1;
+      items[idx] = existing.withQty(existing.qty + 1);
       emit(state.copyWith(items: items));
     } else {
       emit(state.copyWith(items: [...state.items, CartItem(p, 1)]));
@@ -46,14 +46,15 @@ class CartCubit extends Cubit<CartState> {
     }
     if (qty > it.stok) return const CartResult(false, 'Qty melebihi stok');
     final items = [...state.items];
-    final idx = items.indexOf(it);
-    if (idx >= 0) items[idx] = it..qty = qty;
+    // Cocokkan lewat lineId: referensi item bisa sudah usang (item immutable).
+    final idx = items.indexWhere((e) => e.lineId == it.lineId);
+    if (idx >= 0) items[idx] = it.withQty(qty);
     emit(state.copyWith(items: items));
     return const CartResult(true);
   }
 
   void remove(CartItem it) {
-    emit(state.copyWith(items: state.items.where((e) => e != it).toList()));
+    emit(state.copyWith(items: state.items.where((e) => e.lineId != it.lineId).toList()));
   }
 
   void setDiskon(int n) => emit(state.copyWith(diskon: n < 0 ? 0 : n));

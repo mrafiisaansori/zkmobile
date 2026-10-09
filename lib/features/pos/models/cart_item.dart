@@ -9,13 +9,25 @@ class CartItem {
   final Produk produk;
   final int? openBillDetailId;
   final List<ModifierOption> modifiers;
-  int qty;
-  int stokOverride;
+  // Immutable: perubahan qty lewat withQty(). Kalau qty dimutasi in-place,
+  // CartState (Equatable) menganggap state sama dan UI tidak ter-update.
+  final int qty;
+  final int stokOverride;
 
   CartItem(this.produk, this.qty,
       {this.modifiers = const [], this.openBillDetailId, int? stok})
       : lineId = 'l${_lineSeq++}',
         stokOverride = stok ?? produk.stok;
+
+  CartItem._copy(CartItem o, this.qty)
+      : lineId = o.lineId,
+        produk = o.produk,
+        openBillDetailId = o.openBillDetailId,
+        modifiers = o.modifiers,
+        stokOverride = o.stokOverride;
+
+  // Salinan dengan qty baru; lineId sama (dipakai key baris & split bill).
+  CartItem withQty(int qty) => CartItem._copy(this, qty);
 
   int get modifierExtra => modifiers.fold(0, (s, m) => s + m.harga);
   int get unit => produk.hargaJual + modifierExtra;
