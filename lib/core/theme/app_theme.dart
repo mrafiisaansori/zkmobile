@@ -39,8 +39,10 @@ final zkDarkTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
   scaffoldBackgroundColor: ZK.bgDark,
+  // onPrimary putih: semua FilledButton memakai latar biru (ZK.primary),
+  // onPrimary bawaan seed gelap bikin labelnya tak terbaca di mode gelap.
   colorScheme: ColorScheme.fromSeed(
-      seedColor: ZK.primary, brightness: Brightness.dark, primary: ZK.accent),
+      seedColor: ZK.primary, brightness: Brightness.dark, primary: ZK.accent, onPrimary: Colors.white),
   fontFamily: 'Roboto',
 );
 
