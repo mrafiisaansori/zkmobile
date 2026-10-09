@@ -524,9 +524,8 @@ class _PosView extends StatelessWidget {
       Column(
         children: [
           const SizedBox(height: 16),
-          if (checkout.offlinePending > 0) _offlineBanner(context, checkout.offlinePending),
           if (cart.billMode) _billBanner(context, cart),
-          _searchBar(context, cart),
+          _searchBar(context, checkout.offlinePending),
           _categoryChips(context, catalog),
           Expanded(
             child: catalog.loading
@@ -540,8 +539,9 @@ class _PosView extends StatelessWidget {
                         onRefresh: () => pos._catalog.loadProduk(),
                         child: GridView.builder(
                           controller: pos._scroll,
-                          padding: EdgeInsets.fromLTRB(
-                              16, 4, 16, showCartBar && cart.items.isNotEmpty ? 92 : 16),
+                          // Bar keranjang ada di bawah Column (tidak menimpa grid),
+                          // jadi padding bawah cukup 16.
+                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: isTablet(context) ? 4 : 2,
                             mainAxisSpacing: 12,
@@ -616,92 +616,67 @@ class _PosView extends StatelessWidget {
     );
   }
 
-  // Ada transaksi tunai tersimpan lokal, belum kekirim ke server.
-  Widget _offlineBanner(BuildContext context, int pending) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+  // Ada transaksi tunai tersimpan lokal, belum kekirim ke server — chip kecil
+  // di ujung kolom pencarian.
+  Widget _offlineChip(BuildContext context, int pending) => Padding(
+        padding: const EdgeInsets.only(right: 8),
         child: InkWell(
           onTap: () async {
             await Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const FailedTransactionsPage()));
             pos._trySyncOffline();
           },
-          borderRadius: r12,
+          borderRadius: BorderRadius.circular(999),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(color: ZK.amber50, borderRadius: r12),
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(color: ZK.amber50, borderRadius: BorderRadius.circular(999)),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.cloud_off, size: 18, color: ZK.amber700),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                      '$pending transaksi belum tersinkron — ketuk untuk lihat & kirim ulang',
-                      style: const TextStyle(
-                          fontSize: 12.5, fontWeight: FontWeight.w700, color: ZK.amber700)),
-                ),
-                const Icon(Icons.chevron_right, size: 18, color: ZK.amber700),
+                const Icon(Icons.cloud_off, size: 14, color: ZK.amber700),
+                const SizedBox(width: 4),
+                Text('$pending',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: ZK.amber700)),
               ],
             ),
           ),
         ),
       );
 
-  // Ringkasan bill yang sedang diedit (padanan blok billCtx di web).
+  // Ringkasan bill yang sedang diedit (padanan blok billCtx di web) — 1 baris.
   Widget _billBanner(BuildContext context, CartState cart) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final b = cart.bill!;
     return Container(
+      height: 40,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.only(left: 12),
       decoration: BoxDecoration(
         color: dark ? ZK.cardDark : Colors.white,
-        borderRadius: r14,
+        borderRadius: r12,
         border: Border.all(color: dark ? ZK.lineDark : ZK.brand200),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              _pill(Icons.person, b.customerName.isEmpty ? 'Tanpa nama' : b.customerName, ZK.primary,
-                  Colors.white),
-              const SizedBox(width: 6),
-              _pill(Icons.tag, 'Meja ${b.tableNo.isEmpty ? '-' : b.tableNo}',
-                  dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand100, ZK.primary),
-              const Spacer(),
-              if (b.noBill != null)
-                Text(b.noBill!,
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: dark ? Colors.white60 : ZK.slate600)),
-            ],
+          Flexible(
+            child: _pill(Icons.person, b.customerName.isEmpty ? 'Tanpa nama' : b.customerName,
+                ZK.primary, Colors.white),
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: pos._editBillMeta,
-                  icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: const Text('Ubah data'),
-                  style: OutlinedButton.styleFrom(
-                      foregroundColor: ZK.primary,
-                      side: const BorderSide(color: ZK.brand200),
-                      shape: const RoundedRectangleBorder(borderRadius: r12)),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: pos._keluarBill,
-                  icon: const Icon(Icons.close, size: 16),
-                  label: const Text('Keluar bill'),
-                  style: OutlinedButton.styleFrom(
-                      foregroundColor: dark ? Colors.white70 : ZK.slate500,
-                      side: BorderSide(color: dark ? ZK.lineDark : ZK.line),
-                      shape: const RoundedRectangleBorder(borderRadius: r12)),
-                ),
-              ),
+          const SizedBox(width: 6),
+          _pill(Icons.tag, 'Meja ${b.tableNo.isEmpty ? '-' : b.tableNo}',
+              dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand100, ZK.primary),
+          const Spacer(),
+          if (b.noBill != null)
+            Text(b.noBill!,
+                style: TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w600, color: dark ? Colors.white60 : ZK.slate600)),
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_horiz, color: dark ? Colors.white70 : ZK.slate600),
+            onSelected: (v) => v == 'edit' ? pos._editBillMeta() : pos._keluarBill(),
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'edit', child: Text('Ubah data')),
+              PopupMenuItem(value: 'exit', child: Text('Keluar bill')),
             ],
           ),
         ],
@@ -717,12 +692,17 @@ class _PosView extends StatelessWidget {
           children: [
             Icon(icon, size: 13, color: fg),
             const SizedBox(width: 5),
-            Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: fg)),
+            Flexible(
+              child: Text(text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: fg)),
+            ),
           ],
         ),
       );
 
-  Widget _searchBar(BuildContext context, CartState cart) {
+  Widget _searchBar(BuildContext context, int offlinePending) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -741,6 +721,8 @@ class _PosView extends StatelessWidget {
                   hintText: 'Cari produk atau scan barcode...',
                   hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate600, fontSize: 14),
                   prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                  suffixIcon: offlinePending > 0 ? _offlineChip(context, offlinePending) : null,
+                  suffixIconConstraints: const BoxConstraints(minHeight: 24),
                   filled: true,
                   fillColor: dark ? ZK.cardDark : Colors.white,
                   contentPadding: EdgeInsets.zero,
@@ -755,6 +737,7 @@ class _PosView extends StatelessWidget {
           const SizedBox(width: 8),
           SizedBox(
             height: 48,
+            width: 48,
             child: OutlinedButton(
               onPressed: pos._scanBarcode,
               style: OutlinedButton.styleFrom(
@@ -762,31 +745,11 @@ class _PosView extends StatelessWidget {
                 foregroundColor: ZK.primary,
                 side: BorderSide(color: dark ? ZK.lineDark : ZK.brand200),
                 shape: const RoundedRectangleBorder(borderRadius: r12),
-                padding: const EdgeInsets.symmetric(horizontal: 14),
+                padding: EdgeInsets.zero,
               ),
               child: const Icon(Icons.qr_code_scanner, size: 20),
             ),
           ),
-          // Tombol +member disembunyikan di tablet — panel keranjang di sana
-          // sudah punya baris "Pilih member/customer" sendiri.
-          if (pos._isPro && !isTablet(context)) ...[
-            const SizedBox(width: 8),
-            SizedBox(
-              height: 48,
-              child: OutlinedButton(
-                onPressed: pos._pickMember,
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: dark ? ZK.cardDark : Colors.white,
-                  foregroundColor:
-                      cart.member == null ? (dark ? Colors.white70 : ZK.slate500) : ZK.primary,
-                  side: BorderSide(color: dark ? ZK.lineDark : ZK.brand200),
-                  shape: const RoundedRectangleBorder(borderRadius: r12),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                ),
-                child: Icon(cart.member == null ? Icons.person_add_alt : Icons.person, size: 20),
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -835,43 +798,47 @@ class _PosView extends StatelessWidget {
   Widget _cartBar(BuildContext context, CartState cart) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      height: 56,
+      margin: EdgeInsets.fromLTRB(8, 8, 8, 8 + MediaQuery.of(context).padding.bottom),
+      padding: const EdgeInsets.only(right: 4),
       decoration: BoxDecoration(
-        color: dark ? ZK.cardDark : Colors.white,
-        border: Border(top: BorderSide(color: dark ? ZK.lineDark : ZK.line)),
+        color: dark ? ZK.cardDark : ZK.ink,
+        borderRadius: r14,
+        border: dark ? Border.all(color: ZK.lineDark) : null,
       ),
       child: Row(
         children: [
           Expanded(
             child: InkWell(
               onTap: pos._openCart,
-              borderRadius: r12,
+              borderRadius: r14,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(
                   children: [
                     Container(
-                      height: 36,
-                      width: 36,
-                      decoration: BoxDecoration(
-                          color: dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand50,
-                          shape: BoxShape.circle),
-                      child: const Icon(Icons.shopping_cart_outlined, size: 18, color: ZK.primary),
+                      height: 22,
+                      constraints: const BoxConstraints(minWidth: 22),
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(color: ZK.accent, borderRadius: BorderRadius.circular(11)),
+                      child: Text('${cart.count}',
+                          style: const TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.w800, color: Colors.white)),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('${cart.count} item · lihat keranjang',
-                              style: TextStyle(
-                                  fontSize: 12, color: dark ? Colors.white70 : ZK.slate600)),
-                          Text(rupiah(cart.total),
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900,
-                                  color: dark ? Colors.white : ZK.ink)),
+                          FittedBox(
+                            child: Text(rupiah(cart.total),
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white)),
+                          ),
+                          const Text('Lihat keranjang',
+                              style: TextStyle(fontSize: 11, color: Colors.white70)),
                         ],
                       ),
                     ),
@@ -881,12 +848,13 @@ class _PosView extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 46,
+            height: 48,
             child: FilledButton(
               onPressed: pos._openPayment,
               style: FilledButton.styleFrom(
                   backgroundColor: ZK.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 22),
+                  minimumSize: const Size(112, 48),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   shape: const RoundedRectangleBorder(borderRadius: r12)),
               child: Text(cart.billMode ? 'Bayar' : 'Bayar Semua',
                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
