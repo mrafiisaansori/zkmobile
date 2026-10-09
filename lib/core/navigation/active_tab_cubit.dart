@@ -15,6 +15,6 @@ const tabTitles = [
   ('Dashboard', 'Ringkasan performa bisnis Anda'),
   ('Kasir', 'Kelola transaksi penjualan'),
   ('Open Bill', 'Kelola tagihan tertunda'),
-  ('Buka/Tutup Kas', 'Kelola sesi kasir'),
+  ('Sesi Kas', 'Kelola sesi kasir'),
   ('Riwayat', 'Riwayat transaksi penjualan'),
 ];

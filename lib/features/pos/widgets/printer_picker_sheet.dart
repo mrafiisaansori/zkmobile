@@ -17,6 +17,7 @@ class PrinterPickerSheet extends StatefulWidget {
 class _PrinterPickerSheetState extends State<PrinterPickerSheet> {
   List<BluetoothDevice> _devices = [];
   bool _loading = true, _printing = false;
+  String? _target;
 
   @override
   void initState() {
@@ -26,16 +27,23 @@ class _PrinterPickerSheetState extends State<PrinterPickerSheet> {
 
   Future<void> _load() async {
     final d = await PrinterService.pairedDevices();
-    if (mounted) {
-      setState(() {
-        _devices = d;
-        _loading = false;
-      });
-    }
+    final saved = await PrinterService.savedAddress();
+    if (!mounted) return;
+    setState(() {
+      _devices = d;
+      _loading = false;
+    });
+    // Sudah pernah pakai printer & masih terpasang → langsung cetak tanpa pilih.
+    // Kalau gagal (printer mati/jauh), daftar tetap tampil buat pilih manual.
+    final last = d.where((x) => x.address == saved).firstOrNull;
+    if (last != null) _print(last);
   }
 
   Future<void> _print(BluetoothDevice device) async {
-    setState(() => _printing = true);
+    setState(() {
+      _printing = true;
+      _target = device.name;
+    });
     try {
       final id = await tokoIdentitas();
       await PrinterService.printReceipt(
@@ -113,7 +121,7 @@ class _PrinterPickerSheetState extends State<PrinterPickerSheet> {
             if (_printing)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Text('Mencetak...', style: TextStyle(color: dark ? Colors.white60 : ZK.slate500)),
+                child: Text('Mencetak ke ${_target ?? 'printer'}...', style: TextStyle(color: dark ? Colors.white60 : ZK.slate500)),
               ),
             const SizedBox(height: 8),
           ],

@@ -1,5 +1,6 @@
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../network/api_client.dart';
 import '../theme/formatters.dart';
 
@@ -27,6 +28,14 @@ class PrinterService {
     }
   }
 
+  // Printer terakhir yang berhasil dipakai, supaya cetak berikutnya langsung
+  // ke printer itu tanpa pilih ulang.
+  static Future<String?> savedAddress() async =>
+      (await SharedPreferences.getInstance()).getString('printer_address');
+
+  static Future<void> saveAddress(String address) async =>
+      (await SharedPreferences.getInstance()).setString('printer_address', address);
+
   static Future<void> printReceipt(
     BluetoothDevice device, {
     required String noNota,
@@ -42,11 +51,17 @@ class PrinterService {
     String? status,
     bool showBranding = false,
   }) async {
+    // Koneksi sengaja tidak ditutup setelah cetak — dipakai ulang struk berikutnya.
+    // isConnected tidak tahu device mana, jadi ganti printer = putus lalu connect ulang.
     final connected = await bluetooth.isConnected ?? false;
-    if (!connected) {
+    if (connected && await savedAddress() != device.address) {
+      await bluetooth.disconnect();
+    }
+    if (!(await bluetooth.isConnected ?? false)) {
       await bluetooth.connect(device);
       await Future.delayed(const Duration(milliseconds: 500));
     }
+    if (device.address != null) await saveAddress(device.address!);
     const divider = '--------------------------------';
     await bluetooth.printCustom(namaToko ?? 'Zona Kasir', 2, 1);
     if (alamatToko != null && alamatToko.isNotEmpty) {

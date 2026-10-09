@@ -24,6 +24,7 @@ dependencies:
   url_launcher: ^6.3.1
   webview_flutter: ^4.10.0
   gal: ^2.3.0
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +36,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/icons/menu/
 
 # Ikon launcher digenerate dari logo brand yang sama dengan web.
 # icon_launcher.png = icon.png dengan padding lebih (logo diperkecil khusus

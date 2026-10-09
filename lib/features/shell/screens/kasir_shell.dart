@@ -9,6 +9,7 @@ import '../../pos/cubit/cart_cubit.dart';
 import '../../pos/cubit/cart_state.dart';
 import '../../pos/screens/pos_page.dart';
 import '../../riwayat/screens/riwayat_page.dart';
+import '../../../shared/widgets/widgets.dart';
 import '../cubit/shell_cubit.dart';
 import '../widgets/tablet_sidebar.dart';
 
@@ -144,37 +145,26 @@ class _KasirShellState extends State<KasirShell> with SingleTickerProviderStateM
             indicatorShape: const StadiumBorder(),
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
             destinations: [
-              NavigationDestination(
-                  icon: Icon(Icons.dashboard_outlined,
-                      color: dark ? Colors.white60 : ZK.slate600),
-                  selectedIcon: const Icon(Icons.dashboard, color: ZK.primary),
+              const NavigationDestination(
+                  icon: MenuIcon(name: 'dashboard', active: false),
+                  selectedIcon: MenuIcon(name: 'dashboard', active: true),
                   label: 'Dashboard'),
               NavigationDestination(
-                icon: BlocBuilder<CartCubit, CartState>(
-                  builder: (context, cartState) => Badge(
-                    isLabelVisible: cartState.count > 0,
-                    label: Text('${cartState.count}'),
-                    child: Icon(Icons.point_of_sale_outlined,
-                        color: dark ? Colors.white60 : ZK.slate600),
-                  ),
-                ),
-                selectedIcon: const Icon(Icons.point_of_sale, color: ZK.primary),
+                icon: _cartBadge(const MenuIcon(name: 'kasir', active: false)),
+                selectedIcon: _cartBadge(const MenuIcon(name: 'kasir', active: true)),
                 label: 'Kasir',
               ),
-              NavigationDestination(
-                  icon: Icon(Icons.receipt_long_outlined,
-                      color: dark ? Colors.white60 : ZK.slate600),
-                  selectedIcon: const Icon(Icons.receipt_long, color: ZK.primary),
+              const NavigationDestination(
+                  icon: MenuIcon(name: 'openbill', active: false),
+                  selectedIcon: MenuIcon(name: 'openbill', active: true),
                   label: 'Open Bill'),
-              NavigationDestination(
-                  icon: Icon(Icons.lock_open_outlined,
-                      color: dark ? Colors.white60 : ZK.slate600),
-                  selectedIcon: const Icon(Icons.lock_open, color: ZK.primary),
-                  label: 'Buka/Tutup Kas'),
-              NavigationDestination(
-                  icon: Icon(Icons.history_outlined,
-                      color: dark ? Colors.white60 : ZK.slate600),
-                  selectedIcon: const Icon(Icons.history, color: ZK.primary),
+              const NavigationDestination(
+                  icon: MenuIcon(name: 'kas', active: false),
+                  selectedIcon: MenuIcon(name: 'kas', active: true),
+                  label: 'Sesi Kas'),
+              const NavigationDestination(
+                  icon: MenuIcon(name: 'riwayat', active: false),
+                  selectedIcon: MenuIcon(name: 'riwayat', active: true),
                   label: 'Riwayat'),
             ],
           ),
@@ -182,4 +172,13 @@ class _KasirShellState extends State<KasirShell> with SingleTickerProviderStateM
       ),
     );
   }
+
+  // Badge jumlah keranjang — dipakai ikon Kasir terpilih maupun tidak.
+  Widget _cartBadge(Widget child) => BlocBuilder<CartCubit, CartState>(
+        builder: (context, cartState) => Badge(
+          isLabelVisible: cartState.count > 0,
+          label: Text('${cartState.count}'),
+          child: child,
+        ),
+      );
 }

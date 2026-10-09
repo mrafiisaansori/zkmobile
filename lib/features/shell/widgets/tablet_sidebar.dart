@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_cubit.dart';
+import '../../../shared/widgets/widgets.dart';
 import '../../auth/screens/login_page.dart';
 
 // Sidebar tablet reusable — dipakai KasirShell sendiri, dan juga halaman
@@ -47,12 +48,11 @@ class TabletSidebar extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(vertical: 4),
               children: [
-                _item(0, Icons.dashboard_outlined, Icons.dashboard, 'Dashboard', dark),
-                _item(1, Icons.point_of_sale_outlined, Icons.point_of_sale, 'Kasir', dark,
-                    badge: cartCount > 0 ? '$cartCount' : null),
-                _item(2, Icons.receipt_long_outlined, Icons.receipt_long, 'Open Bill', dark),
-                _item(3, Icons.lock_open_outlined, Icons.lock_open, 'Buka/Tutup Kas', dark),
-                _item(4, Icons.history_outlined, Icons.history, 'Riwayat', dark),
+                _item(0, 'dashboard', 'Dashboard', dark),
+                _item(1, 'kasir', 'Kasir', dark, badge: cartCount > 0 ? '$cartCount' : null),
+                _item(2, 'openbill', 'Open Bill', dark),
+                _item(3, 'kas', 'Sesi Kas', dark),
+                _item(4, 'riwayat', 'Riwayat', dark),
               ],
             ),
           ),
@@ -92,11 +92,11 @@ class TabletSidebar extends StatelessWidget {
 
   // Satu item navigasi sidebar — terpilih = pil biru penuh lebar (padanan
   // desain mockup), bukan sekadar indikator kecil di sekitar ikon.
-  Widget _item(int index, IconData icon, IconData selectedIcon, String label, bool dark,
-      {String? badge}) {
+  Widget _item(int index, String icon, String label, bool dark, {String? badge}) {
     final selected = selectedIndex == index;
-    final iconWidget = Icon(selected ? selectedIcon : icon,
-        size: 20, color: selected ? Colors.white : (dark ? Colors.white60 : ZK.slate600));
+    // Terpilih berlatar ZK.primary → varian inactive_dark supaya kontras di atas biru.
+    final iconWidget =
+        MenuIcon(name: icon, active: false, size: 20, dark: selected ? true : null);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       child: Material(

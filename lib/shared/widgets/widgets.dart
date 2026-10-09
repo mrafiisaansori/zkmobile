@@ -6,6 +6,7 @@ export 'diskon_box.dart';
 export 'empty_state.dart';
 export 'hero_shell.dart';
 export 'kembalian_box.dart';
+export 'menu_icon.dart';
 export 'product_card.dart';
 export 'product_grid_skeleton.dart';
 export 'product_thumb.dart';
