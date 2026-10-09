@@ -38,12 +38,15 @@ class AdminDashboardCubit extends Cubit<AdminDashboardState> {
     emit(const AdminDashboardState(status: AdminDashboardStatus.loading));
     try {
       final results = await Future.wait([_repo.summary(), _repo.chart(DateTime.now().year)]);
+      // Halaman bisa sudah ditutup (pindah menu) sebelum request selesai.
+      if (isClosed) return;
       emit(AdminDashboardState(
         status: AdminDashboardStatus.ready,
         summary: results[0] as DashboardSummary,
         chart: results[1] as List<ChartBulan>,
       ));
     } catch (e) {
+      if (isClosed) return;
       emit(AdminDashboardState(status: AdminDashboardStatus.error, error: '$e'));
     }
   }

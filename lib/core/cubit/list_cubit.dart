@@ -57,7 +57,9 @@ class ListCubit<T> extends Cubit<ListState<T>> {
   final int pageSize;
 
   ListCubit({required this.fetchPage, this.deleteItem, this.pageSize = 25})
-      : super(const ListState());
+      // Bukan `const ListState()`: const tak bisa membawa T sehingga jadi
+      // ListState<Never>, lalu copyWith(items: List<T>) gagal TypeError.
+      : super(ListState<T>());
 
   Future<void> load({String? search}) async {
     emit(state.copyWith(

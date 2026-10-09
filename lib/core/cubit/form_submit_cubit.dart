@@ -22,7 +22,8 @@ class FormSubmitState<T> extends Equatable {
 // admin (produk/kategori/satuan/supplier/member/pengguna/voucher/...), sama
 // seperti ListCubit generik menggantikan list-page per entity.
 class FormSubmitCubit<T> extends Cubit<FormSubmitState<T>> {
-  FormSubmitCubit() : super(const FormSubmitState());
+  // Bukan `const FormSubmitState()`: const jadi FormSubmitState<Never> (lihat ListCubit).
+  FormSubmitCubit() : super(FormSubmitState<T>());
 
   Future<T?> submit(Future<T> Function() action) async {
     emit(state.copyWith(status: FormStatus.submitting, error: null));
