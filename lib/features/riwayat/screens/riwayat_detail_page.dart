@@ -272,7 +272,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                   );
     // embedded: isi saja (panel kanan master–detail Riwayat di tablet).
     if (widget.embedded) return content;
-    final heroContent = HeroShell(compact: true, child: SafeArea(top: false, bottom: false, child: content));
+    final heroContent = HeroShell(child: SafeArea(top: false, bottom: false, child: content));
     // heroContent sama untuk phone & tablet, cuma chrome di sekelilingnya
     // beda. Tablet: sidebar sama seperti halaman lain di dalam shell, walau
     // halaman ini di-push di atas shell (bukan salah satu tab-nya) — jadi

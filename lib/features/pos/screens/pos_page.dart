@@ -485,11 +485,10 @@ class _PosView extends StatelessWidget {
     final checkout = context.watch<CheckoutCubit>().state;
 
     if (!catalog.loading && !catalog.shiftActive) {
-      return HeroShell(compact: true, child: SafeArea(top: false, bottom: false, child: _shiftGate(context)));
+      return HeroShell(child: SafeArea(top: false, bottom: false, child: _shiftGate(context)));
     }
     final tablet = isTablet(context);
     return HeroShell(
-      compact: true,
       child: SafeArea(
         top: false,
         bottom: false,

@@ -20,19 +20,13 @@ class HeroShell extends StatelessWidget {
   // Tombol hamburger di header ponsel (kiri, sebelum logo) — dipakai admin
   // buat buka Drawer, karena admin punya terlalu banyak menu buat bottom nav.
   final VoidCallback? onMenuTap;
-  // Tab kerja kasir (POS, Open Bill, Sesi Kas, Riwayat): di ponsel header
-  // jadi bar ringkas warna solid tanpa ilustrasi, supaya tinggi layar dipakai
-  // untuk konten. Ilustrasi tetap di dashboard & login.
-  final bool compact;
   const HeroShell(
       {super.key,
       required this.child,
       this.titleOverride,
       this.subtitleOverride,
-      this.onMenuTap,
-      this.compact = false});
+      this.onMenuTap});
   static const _heroH = 128.0;
-  static const _compactBarH = 56.0;
   // Header tablet tetap lebih ramping dari ponsel (sidebar bawa branding
   // sendiri), tapi diberi sedikit lebih tinggi dari revisi awal.
   static const _heroHTablet = 96.0;
@@ -48,17 +42,10 @@ class HeroShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final tablet = isTablet(context);
-    final bar = compact && !tablet;
-    final heroH = tablet
-        ? _heroHTablet
-        : bar
-            ? MediaQuery.of(context).padding.top + _compactBarH
-            : _heroH;
+    final heroH = tablet ? _heroHTablet : _heroH;
     // Card konten tablet dibuat siku (tanpa rounded) — cuma ponsel yang
     // menimpa ilustrasi dengan lengkungan ala card login.
-    final radius = tablet
-        ? BorderRadius.zero
-        : BorderRadius.vertical(top: Radius.circular(bar ? 16 : 28));
+    final radius = tablet ? BorderRadius.zero : const BorderRadius.vertical(top: Radius.circular(28));
     final card = Container(
       decoration: BoxDecoration(color: dark ? ZK.cardDark : Colors.white, borderRadius: radius),
       child: ClipRRect(
@@ -75,9 +62,7 @@ class HeroShell extends StatelessWidget {
       children: [
         // Ilustrasi mengisi seluruh background, konten menimpa di atasnya.
         Positioned.fill(
-          child: bar
-              ? const ColoredBox(color: ZK.ink)
-              : Stack(
+          child: Stack(
             fit: StackFit.expand,
             children: [
               Image.asset('assets/login_illustration.jpeg',
@@ -143,9 +128,7 @@ class HeroShell extends StatelessWidget {
                 child: Image.asset('assets/logo_splash.png', height: 24, width: 24),
               ),
               const SizedBox(width: 10),
-              if (compact)
-                Expanded(child: _title(compactBar: true))
-              else ...[
+              ...[
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -210,8 +193,7 @@ class HeroShell extends StatelessWidget {
       );
 
   // Judul halaman aktif (override, atau dari ActiveTabCubit untuk tab kasir).
-  // Bar ringkas ponsel cukup judulnya saja, tanpa subjudul.
-  Widget _title({bool compactBar = false}) {
+  Widget _title() {
     Widget build(String title, String? sub) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -220,7 +202,7 @@ class HeroShell extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-            if (sub != null && !compactBar)
+            if (sub != null)
               Text(sub, style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
           ],
         );

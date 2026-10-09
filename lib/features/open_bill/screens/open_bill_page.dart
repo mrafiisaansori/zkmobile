@@ -118,7 +118,6 @@ class _OpenBillViewState extends State<_OpenBillView> {
         ),
       ],
       child: HeroShell(
-        compact: true,
         child: SafeArea(
           top: false,
           bottom: false,

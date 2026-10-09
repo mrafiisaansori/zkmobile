@@ -130,7 +130,6 @@ class _RiwayatViewState extends State<_RiwayatView> {
             ],
           );
           return HeroShell(
-            compact: true,
             child: SafeArea(
               top: false,
               bottom: false,

@@ -76,7 +76,6 @@ class _ClosingView extends StatelessWidget {
           final cardColor = dark ? ZK.cardDark : Colors.white;
           final lineColor = dark ? ZK.lineDark : ZK.line;
           return HeroShell(
-            compact: true,
             child: SafeArea(
               top: false,
               bottom: false,
