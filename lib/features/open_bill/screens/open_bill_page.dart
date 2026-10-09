@@ -98,6 +98,10 @@ class _OpenBillViewState extends State<_OpenBillView> {
     final success = await cubit.cancelBill(b.id);
     if (!context.mounted) return;
     if (success) {
+      // Bill yang sama mungkin sedang terbuka di keranjang Kasir: lepaskan,
+      // supaya tab Kasir tidak lagi menampilkan bill yang sudah batal.
+      final cart = context.read<CartCubit>();
+      if (cart.state.bill?.id == b.id) cart.clear();
       toastOk(context, 'Open bill dibatalkan');
     } else {
       toastError(context, cubit.state.error ?? 'Gagal membatalkan bill');
