@@ -43,11 +43,32 @@ class Session {
   static String? token;
   static User? user;
 
+  // Auto logout kalau tidak ada aktivitas (sentuhan layar, termasuk transaksi)
+  // selama idleTimeout. lastActive disimpan supaya tetap berlaku walau app ditutup.
+  static const idleTimeout = Duration(hours: 3);
+  static DateTime _lastActive = DateTime.now();
+  static DateTime _lastPersisted = DateTime.fromMillisecondsSinceEpoch(0);
+
+  static bool get idleExpired =>
+      token != null && DateTime.now().difference(_lastActive) > idleTimeout;
+
+  static Future<void> touch() async {
+    _lastActive = DateTime.now();
+    // Simpan ke disk paling sering semenit sekali — touch dipanggil tiap tap.
+    if (_lastActive.difference(_lastPersisted) < const Duration(minutes: 1)) return;
+    _lastPersisted = _lastActive;
+    final sp = await SharedPreferences.getInstance();
+    await sp.setInt('last_active', _lastActive.millisecondsSinceEpoch);
+  }
+
   static Future<void> restore() async {
     final sp = await SharedPreferences.getInstance();
     token = sp.getString('token');
     final u = sp.getString('user');
     if (u != null) user = User.fromJson(jsonDecode(u));
+    final last = sp.getInt('last_active');
+    if (last != null) _lastActive = DateTime.fromMillisecondsSinceEpoch(last);
+    if (idleExpired) await clear();
   }
 
   static Future<void> save(String t, Map<String, dynamic> u) async {
@@ -56,12 +77,15 @@ class Session {
     await sp.setString('user', jsonEncode(u));
     token = t;
     user = User.fromJson(u);
+    _lastPersisted = DateTime.fromMillisecondsSinceEpoch(0);
+    await touch();
   }
 
   static Future<void> clear() async {
     final sp = await SharedPreferences.getInstance();
     await sp.remove('token');
     await sp.remove('user');
+    await sp.remove('last_active');
     token = null;
     user = null;
   }
