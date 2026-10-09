@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/dates.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/cubit/list_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -49,11 +50,10 @@ class _AdminTransaksiPageState extends State<AdminTransaksiPage> {
     super.dispose();
   }
 
-  String _iso(DateTime d) => d.toIso8601String().substring(0, 10);
 
   Future<List<Penjualan>> _fetchPage({String? search, int page = 1}) {
-    final dari = _rangeMode ? _iso(_range.start) : _iso(_tanggal);
-    final sampai = _rangeMode ? _iso(_range.end) : _iso(_tanggal);
+    final dari = _rangeMode ? isoDate(_range.start) : isoDate(_tanggal);
+    final sampai = _rangeMode ? isoDate(_range.end) : isoDate(_tanggal);
     return _repo.list(dari: dari, sampai: sampai, status: _status, page: page);
   }
 

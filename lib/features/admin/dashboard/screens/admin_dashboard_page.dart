@@ -1,24 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/dates.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/report_kit.dart';
 import '../cubit/admin_dashboard_cubit.dart';
-
-const _bulanPendek = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-];
-const _bulanPanjang = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
-
-String _formatTanggal(String iso) {
-  final d = DateTime.tryParse(iso);
-  if (d == null) return iso;
-  return '${d.day} ${_bulanPanjang[d.month - 1]} ${d.year}';
-}
 
 // Dashboard admin — data sama dengan src/app/admin/dashboard/page.tsx di web.
 // Urutan mengikuti keputusan pemilik: omzet hari ini (fokus), uang diterima,
@@ -156,7 +143,7 @@ class _AdminDashboardView extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
               children: [
-                Text(_formatTanggal(s.tanggal),
+                Text(MaterialLocalizations.of(context).formatFullDate(DateTime.tryParse(s.tanggal) ?? DateTime.now()),
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.muted)),
                 const SizedBox(height: 10),
                 pair(hero, kasCard),
@@ -212,7 +199,7 @@ Widget _yearChart(List<ChartBulan> data, RColors c, bool tablet) {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(_bulanPendek[m - 1],
+                Text(bulanPendek[m - 1],
                     style: TextStyle(
                         fontSize: 10,
                         fontWeight: m == now ? FontWeight.w800 : FontWeight.w400,

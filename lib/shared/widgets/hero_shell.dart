@@ -199,7 +199,7 @@ class HeroShell extends StatelessWidget {
                 children: [
                   _title(),
                   const Spacer(),
-                  Text(_now(),
+                  Text(_now(context),
                       style: const TextStyle(
                           fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600)),
                 ],
@@ -231,15 +231,11 @@ class HeroShell extends StatelessWidget {
     });
   }
 
-  static const _hari =['Senin', 'Selasa', 'Rabu', 'Kamis', "Jumat", 'Sabtu', 'Minggu'];
-  static const _bulan = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-  ];
-  String _now() {
+  String _now(BuildContext context) {
     final n = DateTime.now();
     final jam = n.hour.toString().padLeft(2, '0');
     final menit = n.minute.toString().padLeft(2, '0');
-    return '${_hari[n.weekday - 1]}, ${n.day} ${_bulan[n.month - 1]} ${n.year} · $jam:$menit';
+    return '${MaterialLocalizations.of(context).formatMediumDate(n)} · $jam:$menit';
   }
 
   // Chip lingkaran gelap di belakang ikon supaya tetap kontras di atas

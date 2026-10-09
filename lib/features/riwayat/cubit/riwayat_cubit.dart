@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../core/theme/dates.dart';
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/network/api_client.dart';
@@ -63,13 +64,12 @@ class RiwayatCubit extends Cubit<RiwayatState> {
       : _repo = repository ?? RiwayatRepository(),
         super(RiwayatState());
 
-  static String _iso(DateTime d) => d.toIso8601String().substring(0, 10);
 
   Future<void> load() async {
     emit(state.copyWith(loading: true));
     try {
-      final dari = state.rangeMode ? _iso(state.range.start) : _iso(state.tanggal);
-      final sampai = state.rangeMode ? _iso(state.range.end) : _iso(state.tanggal);
+      final dari = state.rangeMode ? isoDate(state.range.start) : isoDate(state.tanggal);
+      final sampai = state.rangeMode ? isoDate(state.range.end) : isoDate(state.tanggal);
       final data = await _repo.list(dari: dari, sampai: sampai);
       emit(state.copyWith(loading: false, data: data));
     } catch (e) {

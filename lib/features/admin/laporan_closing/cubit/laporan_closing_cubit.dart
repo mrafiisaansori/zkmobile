@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/theme/dates.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../shared/models/models.dart';
@@ -32,12 +33,11 @@ class LaporanClosingCubit extends Cubit<LaporanClosingState> {
     load();
   }
 
-  String _iso(DateTime d) => d.toIso8601String().substring(0, 10);
 
   Future<void> load() async {
     emit(state.copyWith(loading: true));
     try {
-      final r = await repo.closingReportDaily(_iso(state.tanggal));
+      final r = await repo.closingReportDaily(isoDate(state.tanggal));
       emit(state.copyWith(report: r, loading: false));
     } catch (e) {
       final msg = isNetworkError(e) ? 'Tidak ada koneksi internet' : '$e';

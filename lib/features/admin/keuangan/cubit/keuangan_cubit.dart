@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/theme/dates.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart' show DateTimeRange;
 import '../../../../shared/models/models.dart';
@@ -56,12 +57,11 @@ class KeuanganCubit extends Cubit<KeuanganState> {
     load();
   }
 
-  String _iso(DateTime d) => d.toIso8601String().substring(0, 10);
 
   Future<void> load() async {
     emit(state.copyWith(status: KeuanganStatus.loading, error: null));
     try {
-      final dari = _iso(state.range.start), sampai = _iso(state.range.end);
+      final dari = isoDate(state.range.start), sampai = isoDate(state.range.end);
       final results = await Future.wait([
         _repo.penjualan(dari, sampai),
         _repo.pendapatan(dari, sampai),

@@ -26,8 +26,7 @@ import '../cubit/admin_shell_cubit.dart';
 import '../widgets/admin_sidebar.dart';
 
 // Shell untuk role admin (back-office, tanpa akses jual/POS) — padanan
-// src/constants/nav.ts bagian admin di web. Semua 18 menu sudah terisi;
-// _ComingSoonPage cuma fallback kalau index di luar jangkauan.
+// src/constants/nav.ts bagian admin di web. Semua 18 menu sudah terisi.
 class AdminShell extends StatefulWidget {
   const AdminShell({super.key});
   @override
@@ -89,7 +88,8 @@ class _AdminShellState extends State<AdminShell> {
             15 => const AdminClosingPage(),
             16 => const AdminPengaturanPage(),
             17 => const AdminLanggananPage(),
-            _ => _ComingSoonPage(item: item),
+            // Ke-18 menu sudah terpetakan; indeks lain tidak mungkin terjadi.
+            _ => const AdminDashboardPage(),
           };
           final hero = HeroShell(
             titleOverride: item.title,
@@ -133,21 +133,4 @@ class _AdminShellState extends State<AdminShell> {
       ),
     );
   }
-}
-
-// Placeholder untuk menu yang belum dibangun — jelas namanya, bukan error
-// diam-diam, supaya kelihatan ini memang belum ada isinya (bukan bug).
-class _ComingSoonPage extends StatelessWidget {
-  final NavItem item;
-  const _ComingSoonPage({required this.item});
-  @override
-  Widget build(BuildContext context) => SafeArea(
-        top: false,
-        bottom: false,
-        child: EmptyState(
-          icon: item.icon,
-          title: item.title,
-          description: 'Menu ini sedang disiapkan dan akan segera hadir.',
-        ),
-      );
 }
