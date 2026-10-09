@@ -280,7 +280,7 @@ class _SplitBillSheetState extends State<SplitBillSheet> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text('Belum ada item',
-                  style: TextStyle(fontSize: 12, color: dark ? Colors.white38 : ZK.slate400)),
+                  style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate500)),
             )
           else ...[
             const SizedBox(height: 8),

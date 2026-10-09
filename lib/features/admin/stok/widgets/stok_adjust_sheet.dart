@@ -120,7 +120,7 @@ class _StokAdjustSheetState extends State<StokAdjustSheet> {
                         child: Row(
                           children: [
                             Icon(_jenis == 1 ? Icons.add_circle_outline : Icons.remove_circle_outline,
-                                size: 18, color: _jenis == 1 ? const Color(0xFF047857) : ZK.rose),
+                                size: 18, color: _jenis == 1 ? okTone(dark) : ZK.rose),
                             const SizedBox(width: 8),
                             Text('Stok akhir: $_stokAkhir',
                                 style: TextStyle(

@@ -259,7 +259,7 @@ class _AdminReturFormPageState extends State<AdminReturFormPage> {
                     dropdownColor: dark ? ZK.cardDark : Colors.white,
                     decoration: sheetInput('Pilih supplier', dark: dark),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('— Tanpa supplier —')),
+                      const DropdownMenuItem(value: null, child: Text('Tanpa supplier')),
                       for (final s in _supplier) DropdownMenuItem(value: s.id, child: Text(s.nama)),
                     ],
                     onChanged: (v) => setState(() => _idSupplier = v),
@@ -273,7 +273,7 @@ class _AdminReturFormPageState extends State<AdminReturFormPage> {
                     dropdownColor: dark ? ZK.cardDark : Colors.white,
                     decoration: sheetInput('Pilih pembelian', dark: dark),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('— Tanpa pembelian asal —')),
+                      const DropdownMenuItem(value: null, child: Text('Tanpa pembelian asal')),
                       for (final p in _pembelianOptions)
                         DropdownMenuItem(value: p.id, child: Text(p.noNota)),
                     ],
@@ -366,7 +366,7 @@ class _AdminReturFormPageState extends State<AdminReturFormPage> {
                     borderRadius: r12, border: Border.all(color: dark ? ZK.lineDark : ZK.brand200)),
                 child: Row(
                   children: [
-                    Icon(Icons.inventory_2_outlined, size: 16, color: dark ? Colors.white54 : ZK.slate400),
+                    Icon(Icons.inventory_2_outlined, size: 16, color: dark ? Colors.white60 : ZK.slate400),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(row.produk?.nama ?? 'Pilih produk',
@@ -375,9 +375,9 @@ class _AdminReturFormPageState extends State<AdminReturFormPage> {
                           style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: row.produk == null ? (dark ? Colors.white38 : ZK.slate400) : fg)),
+                              color: row.produk == null ? (dark ? Colors.white60 : ZK.slate500) : fg)),
                     ),
-                    Icon(Icons.chevron_right, size: 18, color: dark ? Colors.white38 : ZK.slate400),
+                    Icon(Icons.chevron_right, size: 18, color: dark ? Colors.white60 : ZK.slate400),
                   ],
                 ),
               ),
@@ -418,7 +418,7 @@ class _AdminReturFormPageState extends State<AdminReturFormPage> {
               dropdownColor: dark ? ZK.cardDark : Colors.white,
               decoration: sheetInput('Kondisi barang', dark: dark),
               items: [
-                const DropdownMenuItem(value: null, child: Text('— Pilih —')),
+                const DropdownMenuItem(value: null, child: Text('Pilih')),
                 for (final k in _kondisiOptions) DropdownMenuItem(value: k, child: Text(k)),
               ],
               onChanged: (v) => setState(() => row.kondisi = v),

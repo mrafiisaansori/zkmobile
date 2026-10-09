@@ -92,7 +92,7 @@ class _VarianSheetState extends State<VarianSheet> {
                   padding: const EdgeInsets.all(24),
                   child: Text('Belum ada grup varian. Buat dulu di menu Varian.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 13, color: dark ? Colors.white54 : ZK.slate400)),
+                      style: TextStyle(fontSize: 13, color: dark ? Colors.white60 : ZK.slate500)),
                 )
               else
                 Flexible(
@@ -113,7 +113,7 @@ class _VarianSheetState extends State<VarianSheet> {
                                     fontWeight: FontWeight.w700,
                                     color: dark ? Colors.white : ZK.ink)),
                             subtitle: Text('${g.options.length} opsi',
-                                style: TextStyle(fontSize: 11, color: dark ? Colors.white54 : ZK.slate400)),
+                                style: TextStyle(fontSize: 11, color: dark ? Colors.white60 : ZK.slate500)),
                           ),
                         const SizedBox(height: 8),
                         BlocBuilder<FormSubmitCubit<void>, FormSubmitState<void>>(

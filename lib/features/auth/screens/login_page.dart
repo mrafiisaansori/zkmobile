@@ -39,7 +39,7 @@ class _LoginFormState extends State<_LoginForm> {
   void _submit(AuthState state) {
     if (state.status == AuthStatus.loading || !_form.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
-    context.read<AuthCubit>().login(_user.text.trim(), _pass.text);
+    context.read<AuthCubit>().login(_user.text.trim(), _pass.text, remember: _remember);
   }
 
   @override
@@ -236,7 +236,7 @@ class _LoginFormState extends State<_LoginForm> {
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
                         size: 20,
-                        color: dark ? Colors.white54 : ZK.slate400),
+                        color: dark ? Colors.white60 : ZK.slate400),
                   ),
                 ),
                 validator: (v) =>
@@ -309,15 +309,15 @@ class _LoginFormState extends State<_LoginForm> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 11.5,
-                      color: dark ? Colors.white38 : ZK.slate400,
+                      color: dark ? Colors.white60 : ZK.slate500,
                       fontWeight: FontWeight.w600)),
             ],
           );
 
   InputDecoration _dec(String hint, IconData icon, [bool dark = false]) => InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
-        prefixIcon: Icon(icon, size: 19, color: dark ? Colors.white54 : ZK.slate400),
+        hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
+        prefixIcon: Icon(icon, size: 19, color: dark ? Colors.white60 : ZK.slate400),
         filled: true,
         fillColor: dark ? const Color(0xFF0D1830) : const Color(0xFFF8FAFC),
         contentPadding: const EdgeInsets.symmetric(vertical: 15),

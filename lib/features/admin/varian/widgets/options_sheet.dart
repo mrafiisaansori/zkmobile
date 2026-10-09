@@ -82,7 +82,7 @@ class _OptionsSheetState extends State<OptionsSheet> {
                 child: _options.isEmpty
                     ? Center(
                         child: Text('Belum ada opsi',
-                            style: TextStyle(fontSize: 13, color: dark ? Colors.white38 : ZK.slate400)))
+                            style: TextStyle(fontSize: 13, color: dark ? Colors.white60 : ZK.slate500)))
                     : ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: _options.length,

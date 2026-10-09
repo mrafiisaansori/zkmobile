@@ -5,6 +5,7 @@ import '../../../../core/cubit/list_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../../shared/widgets/status_tone.dart';
 import '../data/pembelian_repository.dart';
 import '../widgets/pembelian_detail_sheet.dart';
@@ -133,9 +134,9 @@ class _AdminPembelianPageState extends State<AdminPembelianPage> {
                         style: TextStyle(color: dark ? Colors.white : ZK.ink),
                         decoration: InputDecoration(
                           hintText: 'Cari nomor nota...',
-                          hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
+                          hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
                           prefixIcon:
-                              Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                              Icon(Icons.search, size: 20, color: dark ? Colors.white60 : ZK.slate400),
                           filled: true,
                           fillColor: dark ? ZK.cardDark : Colors.white,
                           contentPadding: EdgeInsets.zero,
@@ -207,6 +208,12 @@ class _AdminPembelianPageState extends State<AdminPembelianPage> {
                   final data = state.items;
                   if (loading) {
                     return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                  }
+                  // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                  if (state.status == ListStatus.error && data.isEmpty) {
+                    return RError(
+                        message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                        onRetry: () => _cubit.refresh());
                   }
                   if (data.isEmpty) {
                     return const EmptyState(
@@ -294,8 +301,7 @@ class _AdminPembelianPageState extends State<AdminPembelianPage> {
                                         visualDensity: VisualDensity.compact,
                                         onPressed: () => _selesaikan(p),
                                         tooltip: 'Selesaikan',
-                                        icon: const Icon(Icons.check_circle_outline,
-                                            size: 18, color: Color(0xFF047857))),
+                                        icon: Icon(Icons.check_circle_outline, size: 18, color: okTone(dark))),
                                     IconButton(
                                         visualDensity: VisualDensity.compact,
                                         onPressed: () => _hapus(p),

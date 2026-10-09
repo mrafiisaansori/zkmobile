@@ -265,7 +265,7 @@ class _OfflineStrip extends StatelessWidget {
                     children: [
                       Icon(Icons.cloud_off, size: 14, color: Colors.white),
                       SizedBox(width: 6),
-                      Text('OFFLINE — pakai data tersimpan terakhir',
+                      Text('OFFLINE: pakai data tersimpan terakhir',
                           style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w800,

@@ -6,6 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/produk_repository.dart';
 import '../widgets/varian_sheet.dart';
 import 'admin_produk_form_page.dart';
@@ -120,8 +121,8 @@ class _AdminProdukPageState extends State<AdminProdukPage> {
                       style: TextStyle(color: dark ? Colors.white : ZK.ink),
                       decoration: InputDecoration(
                         hintText: 'Cari produk atau barcode...',
-                        hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
-                        prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                        hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
+                        prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white60 : ZK.slate400),
                         filled: true,
                         fillColor: dark ? ZK.cardDark : Colors.white,
                         contentPadding: EdgeInsets.zero,
@@ -156,6 +157,12 @@ class _AdminProdukPageState extends State<AdminProdukPage> {
                 final loadingMore = state.status == ListStatus.loadingMore;
                 if (loading) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && state.items.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => _cubit.refresh());
                 }
                 if (state.items.isEmpty) {
                   return const EmptyState(
@@ -218,9 +225,9 @@ class _AdminProdukPageState extends State<AdminProdukPage> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
                                         color: p.stok <= 0
-                                            ? ZK.rose50
+                                            ? softBg(ZK.rose, ZK.rose50, dark)
                                             : p.stok <= 10
-                                                ? ZK.amber50
+                                                ? softBg(ZK.amber700, ZK.amber50, dark)
                                                 : (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50),
                                         borderRadius: BorderRadius.circular(999)),
                                     child: Text('Stok ${p.stok}',

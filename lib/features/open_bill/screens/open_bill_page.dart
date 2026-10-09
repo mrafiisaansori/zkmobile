@@ -134,9 +134,9 @@ class _OpenBillViewState extends State<_OpenBillView> {
                     decoration: InputDecoration(
                       hintText: 'Cari nama pelanggan / no bill...',
                       hintStyle:
-                          TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
+                          TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
                       prefixIcon: Icon(Icons.search,
-                          size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                          size: 20, color: dark ? Colors.white60 : ZK.slate400),
                       filled: true,
                       fillColor: dark ? ZK.cardDark : Colors.white,
                       contentPadding: EdgeInsets.zero,
@@ -304,7 +304,7 @@ class _OpenBillViewState extends State<_OpenBillView> {
     return _billCard(
       dark: dark,
       border: tone.withValues(alpha: 0.3),
-      tileBg: rejected ? ZK.rose50 : ZK.amber50,
+      tileBg: rejected ? softBg(ZK.rose, ZK.rose50, dark) : softBg(ZK.amber700, ZK.amber50, dark),
       tile: Icon(rejected ? Icons.error_outline : Icons.cloud_off, color: tone),
       onTap: () => _bukaPending(context, q),
       onCancel: () => _hapusPending(context, q),
@@ -316,7 +316,7 @@ class _OpenBillViewState extends State<_OpenBillView> {
         Text(
             rejected
                 ? 'Ditolak server: ${q.errorMessage ?? '-'}'
-                : 'Belum tersinkron — ketuk untuk tambah item / bayar.',
+                : 'Belum tersinkron: ketuk untuk tambah item / bayar.',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 12, color: rejected ? ZK.rose : (dark ? Colors.white60 : ZK.slate500))),
@@ -376,8 +376,8 @@ class _OpenBillViewState extends State<_OpenBillView> {
 
   Widget _statusBadge(String s, bool dark) {
     final (bg, fg, label) = switch (s) {
-      'PAID' => (const Color(0xFFECFDF5), const Color(0xFF047857), 'Lunas'),
-      'CANCELLED' => (ZK.rose50, ZK.rose, 'Batal'),
+      'PAID' => (softBg(ZK.success, ZK.successBg, dark), okTone(dark), 'Lunas'),
+      'CANCELLED' => (softBg(ZK.rose, ZK.rose50, dark), ZK.rose, 'Batal'),
       _ => (
           dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50,
           dark ? Colors.white : ZK.brand700,

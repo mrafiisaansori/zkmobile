@@ -15,10 +15,10 @@ class ProductCard extends StatelessWidget {
     final habis = produk.stok <= 0;
     // Nada badge stok mengikuti web: habis=rose, <=10 amber, sisanya brand.
     final (bg, fg) = habis
-        ? (ZK.rose50, ZK.rose)
+        ? (softBg(ZK.rose, ZK.rose50, dark), ZK.rose)
         : produk.stok <= 10
-            ? (ZK.amber50, ZK.amber700)
-            : (ZK.brand50, ZK.brand700);
+            ? (softBg(ZK.amber700, ZK.amber50, dark), ZK.amber700)
+            : (softBg(ZK.primary, ZK.brand50, dark), dark ? ZK.brand200 : ZK.brand700);
 
     return Opacity(
       opacity: habis ? 0.6 : 1,

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
-import '../../shared/widgets/report_kit.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../cubit/admin_dashboard_cubit.dart';
 
 const _bulanPendek = [
@@ -81,7 +81,7 @@ class _AdminDashboardView extends StatelessWidget {
           title: 'Perlu restock',
           caption: s.stokMenipis.isEmpty ? null : '${s.stokMenipis.length} produk di bawah stok minimum',
           child: s.stokMenipis.isEmpty
-              ? const RNote('Semua stok di atas batas minimum.', icon: Icons.check_circle_outline, color: okGreen)
+              ? const RNote('Semua stok di atas batas minimum.', icon: Icons.check_circle_outline, ok: true)
               : RLedger([
                   for (final p in s.stokMenipis)
                     RLine(p.nama, p.stok <= 0 ? 'Habis' : 'Sisa ${p.stok}',

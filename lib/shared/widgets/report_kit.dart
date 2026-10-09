@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
 
 // Perangkat tampilan laporan admin (dashboard, keuangan, transaksi, closing).
 // Gaya "buku besar": satu angka utama per halaman, rincian sebagai baris
@@ -7,16 +7,16 @@ import '../../../../core/theme/app_theme.dart';
 // Warna status (rose/amber/hijau) hanya untuk keadaan nyata, bukan hiasan.
 
 const tabular = [FontFeature.tabularFigures()];
-const okGreen = Color(0xFF047857);
 
 class RColors {
-  final Color fg, muted, line, card, soft;
+  final Color fg, muted, line, card, soft, ok;
   RColors(bool dark)
       : fg = dark ? Colors.white : ZK.ink,
         muted = dark ? Colors.white60 : ZK.slate600,
         line = dark ? ZK.lineDark : ZK.line,
         card = dark ? ZK.cardDark : Colors.white,
-        soft = dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50;
+        soft = dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50,
+        ok = okTone(dark);
   static RColors of(BuildContext c) => RColors(Theme.of(c).brightness == Brightness.dark);
 }
 
@@ -298,10 +298,12 @@ class RNote extends StatelessWidget {
   final String text;
   final IconData? icon;
   final Color? color;
-  const RNote(this.text, {super.key, this.icon, this.color});
+  final bool ok; // hijau sukses sesuai tema
+  const RNote(this.text, {super.key, this.icon, this.color, this.ok = false});
   @override
   Widget build(BuildContext context) {
     final c = RColors.of(context);
+    final color = ok ? c.ok : this.color;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(

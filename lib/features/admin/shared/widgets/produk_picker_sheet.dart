@@ -84,7 +84,7 @@ class _ProdukPickerSheetState extends State<ProdukPickerSheet> {
                 onChanged: _onSearch,
                 style: TextStyle(color: dark ? Colors.white : ZK.ink),
                 decoration: sheetInput('Cari produk...', dark: dark).copyWith(
-                    prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400)),
+                    prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white60 : ZK.slate400)),
               ),
             ),
             Expanded(
@@ -111,7 +111,7 @@ class _ProdukPickerSheetState extends State<ProdukPickerSheet> {
                                       fontWeight: FontWeight.w700,
                                       color: dark ? Colors.white : ZK.ink)),
                               subtitle: Text('${rupiah(p.hargaJual)} · Stok ${p.stok}',
-                                  style: TextStyle(fontSize: 12, color: dark ? Colors.white54 : ZK.slate500)),
+                                  style: TextStyle(fontSize: 12, color: dark ? Colors.white60 : ZK.slate500)),
                               onTap: () => Navigator.pop(context, p),
                             );
                           },

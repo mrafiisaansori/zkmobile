@@ -5,6 +5,7 @@ import '../../../../core/cubit/list_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/pengguna_repository.dart';
 import '../widgets/pengguna_form_sheet.dart';
 
@@ -88,7 +89,7 @@ class _AdminPenggunaPageState extends State<AdminPenggunaPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Password baru untuk akun ${res['username']}. Catat sekarang — hanya tampil sekali.',
+              Text('Password baru untuk akun ${res['username']}. Catat sekarang, hanya tampil sekali.',
                   style: const TextStyle(fontSize: 13)),
               const SizedBox(height: 12),
               SelectableText('${res['password']}',
@@ -142,6 +143,12 @@ class _AdminPenggunaPageState extends State<AdminPenggunaPage> {
                 final loading = state.status == ListStatus.initial || state.status == ListStatus.loading;
                 if (loading) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && state.items.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => _cubit.refresh());
                 }
                 if (state.items.isEmpty) {
                   return const EmptyState(

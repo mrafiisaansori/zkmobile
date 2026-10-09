@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
-import '../../shared/widgets/report_kit.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../cubit/keuangan_cubit.dart';
 
 // Padanan src/app/admin/laporan/page.tsx — laporan laba rugi sederhana per
@@ -161,7 +161,7 @@ class _AdminKeuanganView extends StatelessWidget {
       final stok = RSection(
         title: 'Perlu restock',
         child: rekap.produkStokMenipis.isEmpty
-            ? const RNote('Semua stok di atas batas minimum.', icon: Icons.check_circle_outline, color: okGreen)
+            ? const RNote('Semua stok di atas batas minimum.', icon: Icons.check_circle_outline, ok: true)
             : RLedger([
                 for (final p in rekap.produkStokMenipis)
                   RLine(p.nama, p.stok <= 0 ? 'Habis' : 'Sisa ${p.stok}',

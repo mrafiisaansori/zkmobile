@@ -45,7 +45,7 @@ class _FailedTransactionsPageState extends State<FailedTransactionsPage> {
     if (r.synced > 0) {
       toastOk(context, 'Berhasil disinkron');
     } else if (r.failed > 0) {
-      toastError(context, 'Masih ditolak server — cek lagi keterangannya');
+      toastError(context, 'Masih ditolak server: cek lagi keterangannya');
     } else {
       toastError(context, 'Belum ada koneksi internet');
     }

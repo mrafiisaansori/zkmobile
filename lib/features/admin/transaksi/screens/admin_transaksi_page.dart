@@ -6,7 +6,7 @@ import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
 import '../data/transaksi_repository.dart';
-import '../../shared/widgets/report_kit.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../widgets/transaksi_detail_sheet.dart';
 
 // Padanan lib/admin_transaksi_page.dart lama — riwayat SELURUH kasir (beda

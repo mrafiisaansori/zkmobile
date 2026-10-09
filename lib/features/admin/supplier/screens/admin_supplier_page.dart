@@ -6,6 +6,7 @@ import '../../../../core/cubit/list_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/supplier_repository.dart';
 import '../widgets/supplier_form_sheet.dart';
 
@@ -102,8 +103,8 @@ class _AdminSupplierPageState extends State<AdminSupplierPage> {
                       style: TextStyle(color: dark ? Colors.white : ZK.ink),
                       decoration: InputDecoration(
                         hintText: 'Cari nama / telepon...',
-                        hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
-                        prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                        hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
+                        prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white60 : ZK.slate400),
                         filled: true,
                         fillColor: dark ? ZK.cardDark : Colors.white,
                         contentPadding: EdgeInsets.zero,
@@ -137,6 +138,12 @@ class _AdminSupplierPageState extends State<AdminSupplierPage> {
                 final loading = state.status == ListStatus.initial || state.status == ListStatus.loading;
                 if (loading) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && state.items.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => _cubit.refresh());
                 }
                 if (state.items.isEmpty) {
                   return const EmptyState(
@@ -198,7 +205,7 @@ class _AdminSupplierPageState extends State<AdminSupplierPage> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
                                         color: s.status == 0
-                                            ? ZK.rose50
+                                            ? softBg(ZK.rose, ZK.rose50, dark)
                                             : (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50),
                                         borderRadius: BorderRadius.circular(999)),
                                     child: Text(s.status == 0 ? 'Nonaktif' : 'Aktif',

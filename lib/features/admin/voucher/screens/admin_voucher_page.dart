@@ -6,6 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/voucher_repository.dart';
 import '../widgets/voucher_form_sheet.dart';
 
@@ -81,7 +82,7 @@ class _AdminVoucherView extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
               child: Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: ZK.amber50, borderRadius: r12),
+                decoration: BoxDecoration(color: softBg(ZK.amber700, ZK.amber50, dark), borderRadius: r12),
                 child: Text('Bikin voucher baru tersedia mulai paket PRO. Voucher lama tetap bisa dikelola.',
                     style: TextStyle(fontSize: 12, color: ZK.amber700)),
               ),
@@ -93,6 +94,12 @@ class _AdminVoucherView extends StatelessWidget {
                 final data = state.items;
                 if (loading) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && data.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => context.read<ListCubit<Voucher>>().refresh());
                 }
                 if (data.isEmpty) {
                   return const EmptyState(
@@ -157,7 +164,7 @@ class _AdminVoucherView extends StatelessWidget {
                                     decoration: BoxDecoration(
                                         color: v.aktif
                                             ? (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50)
-                                            : ZK.rose50,
+                                            : softBg(ZK.rose, ZK.rose50, dark),
                                         borderRadius: BorderRadius.circular(999)),
                                     child: Text(v.aktif ? 'Aktif' : 'Nonaktif',
                                         style: TextStyle(

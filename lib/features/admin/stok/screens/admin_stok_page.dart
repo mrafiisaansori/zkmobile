@@ -6,6 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/stok_repository.dart';
 import '../widgets/stok_adjust_sheet.dart';
 
@@ -84,8 +85,8 @@ class _AdminStokViewState extends State<_AdminStokView> {
                 style: TextStyle(color: dark ? Colors.white : ZK.ink),
                 decoration: InputDecoration(
                   hintText: 'Cari produk untuk penyesuaian stok...',
-                  hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
-                  prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                  hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
+                  prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white60 : ZK.slate400),
                   filled: true,
                   fillColor: dark ? ZK.cardDark : Colors.white,
                   contentPadding: EdgeInsets.zero,
@@ -105,6 +106,12 @@ class _AdminStokViewState extends State<_AdminStokView> {
                 final data = state.items;
                 if (loading) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && data.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => context.read<ListCubit<Produk>>().refresh());
                 }
                 if (data.isEmpty) {
                   return const EmptyState(
@@ -160,9 +167,9 @@ class _AdminStokViewState extends State<_AdminStokView> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
                                         color: p.stok <= 0
-                                            ? ZK.rose50
+                                            ? softBg(ZK.rose, ZK.rose50, dark)
                                             : p.stok <= 10
-                                                ? ZK.amber50
+                                                ? softBg(ZK.amber700, ZK.amber50, dark)
                                                 : (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50),
                                         borderRadius: BorderRadius.circular(999)),
                                     child: Text('Stok ${p.stok}',

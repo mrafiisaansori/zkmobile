@@ -78,7 +78,7 @@ class _MutasiSheetState extends State<MutasiSheet> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: _tipeBtn('IN', 'Kas Masuk', Icons.arrow_downward,
-                                const Color(0xFF10B981), dark),
+                                okTone(dark), dark),
                           ),
                         ],
                       ),
@@ -141,7 +141,7 @@ class _MutasiSheetState extends State<MutasiSheet> {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 18, color: aktif ? tone : (dark ? Colors.white54 : ZK.slate500)),
+            Icon(icon, size: 18, color: aktif ? tone : (dark ? Colors.white60 : ZK.slate500)),
             const SizedBox(height: 4),
             Text(label,
                 style: TextStyle(

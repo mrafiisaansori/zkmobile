@@ -103,7 +103,7 @@ class _PembayaranTabViewState extends State<_PembayaranTabView> {
                             Text('Pembayaran QRIS',
                                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: fg)),
                             const SizedBox(height: 2),
-                            Text('QRIS statis — pelanggan scan, kasir konfirmasi manual.',
+                            Text('QRIS statis: pelanggan scan, kasir konfirmasi manual.',
                                 style: TextStyle(fontSize: 11.5, color: muted)),
                           ],
                         ),

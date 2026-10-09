@@ -106,7 +106,7 @@ class _MidtransPaymentPageState extends State<MidtransPaymentPage> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Batalkan pembayaran?'),
-        content: const Text('Kalau sudah bayar, tunggu sebentar — status akan terupdate otomatis.'),
+        content: const Text('Kalau sudah bayar, tunggu sebentar. Status akan terupdate otomatis.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Tetap di sini')),
           TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Tutup')),

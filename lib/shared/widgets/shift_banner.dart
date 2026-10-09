@@ -21,7 +21,7 @@ class ShiftBanner extends StatelessWidget {
               Icon(Icons.lock_outline, size: 18, color: ZK.amber700),
               SizedBox(width: 8),
               Expanded(
-                child: Text('Sesi kasir belum dibuka — ketuk untuk membuka.',
+                child: Text('Sesi kasir belum dibuka: ketuk untuk membuka.',
                     style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,

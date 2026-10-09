@@ -7,6 +7,7 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/member_repository.dart';
 import '../widgets/member_form_sheet.dart';
 
@@ -133,8 +134,8 @@ class _AdminMemberPageState extends State<AdminMemberPage> {
                       style: TextStyle(color: dark ? Colors.white : ZK.ink),
                       decoration: InputDecoration(
                         hintText: 'Cari nama / no. HP / kode...',
-                        hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
-                        prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                        hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
+                        prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white60 : ZK.slate400),
                         filled: true,
                         fillColor: dark ? ZK.cardDark : Colors.white,
                         contentPadding: EdgeInsets.zero,
@@ -168,6 +169,12 @@ class _AdminMemberPageState extends State<AdminMemberPage> {
                 final loading = state.status == ListStatus.initial || state.status == ListStatus.loading;
                 if (loading) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && state.items.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => _cubit.refresh());
                 }
                 if (state.items.isEmpty) {
                   return const EmptyState(
@@ -222,7 +229,7 @@ class _AdminMemberPageState extends State<AdminMemberPage> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
-                                          color: ZK.rose50, borderRadius: BorderRadius.circular(999)),
+                                          color: softBg(ZK.rose, ZK.rose50, dark), borderRadius: BorderRadius.circular(999)),
                                       child: const Text('Nonaktif',
                                           style: TextStyle(
                                               fontSize: 10.5, fontWeight: FontWeight.w700, color: ZK.rose)),

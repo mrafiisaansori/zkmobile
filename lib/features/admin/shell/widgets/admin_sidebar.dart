@@ -88,7 +88,7 @@ class AdminSidebar extends StatelessWidget {
                               color: dark ? Colors.white : ZK.ink)),
                       Text('Panel Admin',
                           style: TextStyle(
-                              fontSize: 10, color: dark ? Colors.white54 : ZK.slate500)),
+                              fontSize: 10, color: dark ? Colors.white60 : ZK.slate500)),
                     ],
                   ),
                 ),
@@ -131,7 +131,7 @@ class AdminMenuList extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 0.4,
-                            color: dark ? Colors.white38 : ZK.slate400)),
+                            color: dark ? Colors.white60 : ZK.slate500)),
                   ),
                 for (final it in g.items) _item(context, it, i++, dark),
               ],

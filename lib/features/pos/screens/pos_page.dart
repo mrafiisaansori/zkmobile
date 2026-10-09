@@ -258,7 +258,7 @@ class _PosPageState extends State<PosPage> {
     if (!mounted) return;
     if (r.synced > 0) toastOk(context, '${r.synced} transaksi offline berhasil disinkron');
     if (r.failed > 0) {
-      toastError(context, '${r.failed} transaksi offline ditolak server — cek ulang manual');
+      toastError(context, '${r.failed} transaksi offline ditolak server: cek ulang manual');
     }
   }
 
@@ -287,7 +287,7 @@ class _PosPageState extends State<PosPage> {
       toastOk(
           context,
           result == BillSaveResult.offline
-              ? 'Offline — bill akan tersimpan otomatis saat online lagi'
+              ? 'Offline: bill akan tersimpan otomatis saat online lagi'
               : 'Bill tersimpan');
       context.read<ShellCubit>().goToOpenBill();
     } catch (e) {
@@ -729,8 +729,8 @@ class _PosView extends StatelessWidget {
                 style: TextStyle(color: dark ? Colors.white : ZK.ink),
                 decoration: InputDecoration(
                   hintText: 'Cari produk atau scan barcode...',
-                  hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate600, fontSize: 14),
-                  prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white54 : ZK.slate400),
+                  hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate600, fontSize: 14),
+                  prefixIcon: Icon(Icons.search, size: 20, color: dark ? Colors.white60 : ZK.slate400),
                   suffixIcon: offlinePending > 0 ? _offlineChip(context, offlinePending) : null,
                   suffixIconConstraints: const BoxConstraints(minHeight: 24),
                   filled: true,

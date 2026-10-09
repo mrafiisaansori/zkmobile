@@ -71,10 +71,15 @@ class Session {
     if (idleExpired) await clear();
   }
 
-  static Future<void> save(String t, Map<String, dynamic> u) async {
+  static Future<void> save(String t, Map<String, dynamic> u, {bool persist = true}) async {
     final sp = await SharedPreferences.getInstance();
-    await sp.setString('token', t);
-    await sp.setString('user', jsonEncode(u));
+    if (persist) {
+      await sp.setString('token', t);
+      await sp.setString('user', jsonEncode(u));
+    } else {
+      await sp.remove('token');
+      await sp.remove('user');
+    }
     token = t;
     user = User.fromJson(u);
     _lastPersisted = DateTime.fromMillisecondsSinceEpoch(0);

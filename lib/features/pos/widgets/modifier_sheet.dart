@@ -143,7 +143,7 @@ class _ModifierSheetState extends State<ModifierSheet> {
                         size: 19,
                         color: (_sel[g.id] ?? []).contains(o.id)
                             ? ZK.primary
-                            : (dark ? Colors.white38 : ZK.slate400),
+                            : (dark ? Colors.white60 : ZK.slate400),
                       ),
                       const SizedBox(width: 10),
                       Expanded(

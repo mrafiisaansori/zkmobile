@@ -158,7 +158,7 @@ class TabletSidebar extends StatelessWidget {
                           color: dark ? Colors.white : ZK.ink)),
                   Text('Solusi Bisnis Anda',
                       style:
-                          TextStyle(fontSize: 10, color: dark ? Colors.white54 : ZK.slate500)),
+                          TextStyle(fontSize: 10, color: dark ? Colors.white60 : ZK.slate500)),
                 ],
               ),
             ),
@@ -261,7 +261,7 @@ class TabletSidebar extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(shiftActive ? 'Sesi aktif' : 'Sesi tidak aktif',
                             style: TextStyle(
-                                fontSize: 10.5, color: dark ? Colors.white54 : ZK.slate500)),
+                                fontSize: 10.5, color: dark ? Colors.white60 : ZK.slate500)),
                       ],
                     ),
                   ],

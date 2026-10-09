@@ -92,7 +92,7 @@ class _MemberPickerSheetState extends State<MemberPickerSheet> {
                               onTap: () => Navigator.pop(context, m),
                               shape: const RoundedRectangleBorder(borderRadius: r12),
                               leading: CircleAvatar(
-                                backgroundColor: ZK.brand50,
+                                backgroundColor: softBg(ZK.primary, ZK.brand50, Theme.of(context).brightness == Brightness.dark),
                                 child: Text(m.nama.isEmpty ? '?' : m.nama[0].toUpperCase(),
                                     style: const TextStyle(color: ZK.primary, fontWeight: FontWeight.w800)),
                               ),

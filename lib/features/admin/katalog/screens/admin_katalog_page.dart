@@ -267,7 +267,7 @@ class _AdminKatalogViewState extends State<_AdminKatalogView> {
 
   InputDecoration _sheetInput(String hint, {bool dark = false}) => InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
+        hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
         filled: true,
         fillColor: dark ? ZK.bgDark : Colors.white,
         isDense: true,

@@ -14,7 +14,8 @@ class AuthCubit extends Cubit<AuthState> {
       : _repo = repo ?? AuthRepository(),
         super(const AuthState.idle());
 
-  Future<void> login(String username, String password) async {
+  // remember=false: sesi hanya di memori, hilang saat app ditutup (perangkat bersama).
+  Future<void> login(String username, String password, {bool remember = true}) async {
     emit(const AuthState(status: AuthStatus.loading));
     try {
       final res = await _repo.login(username, password);
@@ -23,7 +24,7 @@ class AuthCubit extends Cubit<AuthState> {
       if (role != 'kasir' && role != 'admin') {
         throw ApiException('Role akun ini belum didukung di aplikasi mobile.');
       }
-      await Session.save('${res['token']}', u);
+      await Session.save('${res['token']}', u, persist: remember);
       emit(AuthState(status: AuthStatus.success, role: role));
     } catch (e) {
       emit(AuthState(status: AuthStatus.error, error: e));

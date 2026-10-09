@@ -61,7 +61,7 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
           builder: (_) => MidtransPaymentPage(paymentId: payment.id, snapUrl: url)));
       if (!context.mounted) return;
       if (status == 'PAID') {
-        toastOk(context, 'Pembayaran berhasil — plan PRO aktif');
+        toastOk(context, 'Pembayaran berhasil: plan PRO aktif');
       } else if (status == 'FAILED' || status == 'EXPIRED') {
         toastError(context, 'Pembayaran tidak berhasil');
       }
@@ -158,7 +158,7 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.check_circle, size: 16, color: Color(0xFF10B981)),
+                              Icon(Icons.check_circle, size: 16, color: okTone(dark)),
                               const SizedBox(width: 8),
                               Expanded(child: Text(benefit, style: TextStyle(fontSize: 12.5, color: fg))),
                             ],
@@ -258,8 +258,8 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
   Widget _paymentRow(SubscriptionPayment p, bool dark, Color fg, Color muted) {
     final (bg, tone) = switch (p.status) {
       'PAID' => (dark ? ZK.primary.withValues(alpha: 0.16) : ZK.brand50, dark ? Colors.white : ZK.brand700),
-      'PENDING' => (ZK.amber50, ZK.amber700),
-      _ => (ZK.rose50, ZK.rose),
+      'PENDING' => (softBg(ZK.amber700, ZK.amber50, dark), ZK.amber700),
+      _ => (softBg(ZK.rose, ZK.rose50, dark), ZK.rose),
     };
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -318,7 +318,7 @@ class _AdminLanggananViewState extends State<_AdminLanggananView> {
             if (coret != null)
               Text(rupiah(coret),
                   style: const TextStyle(
-                      fontSize: 10.5, color: ZK.slate400, decoration: TextDecoration.lineThrough)),
+                      fontSize: 10.5, color: ZK.slate500, decoration: TextDecoration.lineThrough)),
             Text(rupiah(price),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

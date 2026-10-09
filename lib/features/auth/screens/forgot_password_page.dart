@@ -237,7 +237,7 @@ class _ForgotPasswordFormState extends State<_ForgotPasswordForm> {
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 11.5,
-                  color: dark ? Colors.white38 : ZK.slate400,
+                  color: dark ? Colors.white60 : ZK.slate500,
                   fontWeight: FontWeight.w600)),
         ],
       );
@@ -324,7 +324,7 @@ class _ForgotPasswordFormState extends State<_ForgotPasswordForm> {
                   icon: Icon(
                       _showPass ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                       size: 20,
-                      color: dark ? Colors.white54 : ZK.slate400),
+                      color: dark ? Colors.white60 : ZK.slate400),
                 ),
               ),
               validator: (v) =>
@@ -343,7 +343,7 @@ class _ForgotPasswordFormState extends State<_ForgotPasswordForm> {
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
                       size: 20,
-                      color: dark ? Colors.white54 : ZK.slate400),
+                      color: dark ? Colors.white60 : ZK.slate400),
                 ),
               ),
               validator: (v) => (v ?? '').isEmpty ? 'Ulangi password' : null,
@@ -389,7 +389,7 @@ class _ForgotPasswordFormState extends State<_ForgotPasswordForm> {
                           fontSize: 12.5,
                           fontWeight: FontWeight.w700,
                           color: _cooldown > 0
-                              ? (dark ? Colors.white38 : ZK.slate400)
+                              ? (dark ? Colors.white60 : ZK.slate400)
                               : ZK.primary)),
                 ),
               ],
@@ -400,8 +400,8 @@ class _ForgotPasswordFormState extends State<_ForgotPasswordForm> {
 
   InputDecoration _dec(String hint, IconData icon, [bool dark = false]) => InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
-        prefixIcon: Icon(icon, size: 19, color: dark ? Colors.white54 : ZK.slate400),
+        hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
+        prefixIcon: Icon(icon, size: 19, color: dark ? Colors.white60 : ZK.slate400),
         filled: true,
         fillColor: dark ? const Color(0xFF0D1830) : const Color(0xFFF8FAFC),
         contentPadding: const EdgeInsets.symmetric(vertical: 13),

@@ -156,7 +156,7 @@ class CartSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(Icons.chevron_right, color: dark ? Colors.white38 : ZK.slate400),
+                Icon(Icons.chevron_right, color: dark ? Colors.white60 : ZK.slate400),
               ],
             ),
           ),

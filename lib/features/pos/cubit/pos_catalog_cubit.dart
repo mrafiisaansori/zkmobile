@@ -91,7 +91,7 @@ class PosCatalogCubit extends Cubit<PosCatalogState> {
             loading: false,
             loadingMore: false,
             info: cached.isNotEmpty
-                ? 'Offline — menampilkan katalog produk tersimpan terakhir'
+                ? 'Offline: menampilkan katalog produk tersimpan terakhir'
                 : null,
             error: cached.isEmpty ? _message(e) : null,
           ));

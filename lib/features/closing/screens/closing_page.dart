@@ -159,7 +159,7 @@ class _ClosingView extends StatelessWidget {
     final selisih = (r['SELISIH_CASH'] as num?)?.toInt() ?? 0;
     final pas = selisih == 0;
     final kurang = selisih < 0;
-    final tone = pas ? const Color(0xFF10B981) : (kurang ? ZK.rose : ZK.amber700);
+    final tone = pas ? okTone(dark) : (kurang ? ZK.rose : ZK.amber700);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       decoration: BoxDecoration(
@@ -261,7 +261,7 @@ class _ClosingView extends StatelessWidget {
           Container(
               height: 8,
               width: 8,
-              decoration: const BoxDecoration(color: Color(0xFF10B981), shape: BoxShape.circle)),
+              decoration: BoxDecoration(color: okTone(dark), shape: BoxShape.circle)),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -330,7 +330,7 @@ class _ClosingView extends StatelessWidget {
                     Row(
                       children: [
                         Icon(m['is_cash'] == true ? Icons.payments_outlined : Icons.credit_card,
-                            size: 16, color: m['is_cash'] == true ? const Color(0xFF10B981) : muted),
+                            size: 16, color: m['is_cash'] == true ? okTone(dark) : muted),
                         const SizedBox(width: 8),
                         Text('${m['nama']}', style: TextStyle(fontSize: 13, color: fg)),
                       ],

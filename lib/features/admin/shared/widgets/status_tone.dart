@@ -8,8 +8,7 @@ import '../../../../core/theme/app_theme.dart';
 const statusLabel = {0: 'Draft', 1: 'Selesai', 2: 'Dibatalkan'};
 
 (Color, Color) statusTone(int status, bool dark) => switch (status) {
-      1 => (dark ? const Color(0xFF064E3B) : const Color(0xFFECFDF5),
-          dark ? Colors.greenAccent : const Color(0xFF047857)),
-      2 => (ZK.rose50, ZK.rose),
-      _ => (ZK.amber50, ZK.amber700),
+      1 => (softBg(ZK.success, ZK.successBg, dark), okTone(dark)),
+      2 => (softBg(ZK.rose, ZK.rose50, dark), ZK.rose),
+      _ => (softBg(ZK.amber700, ZK.amber50, dark), ZK.amber700),
     };

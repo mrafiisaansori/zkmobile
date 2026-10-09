@@ -5,6 +5,7 @@ import '../../../../core/cubit/list_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/kategori_repository.dart';
 import '../widgets/kategori_form_sheet.dart';
 
@@ -103,6 +104,12 @@ class _AdminKategoriPageState extends State<AdminKategoriPage> {
                 final loading = state.status == ListStatus.initial || state.status == ListStatus.loading;
                 if (loading) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
+                }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && state.items.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => _cubit.refresh());
                 }
                 if (state.items.isEmpty) {
                   return const EmptyState(

@@ -105,7 +105,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
       toastOk(
           context,
           res.offline
-              ? 'Koneksi terputus — transaksi disimpan offline & otomatis dikirim saat online lagi.'
+              ? 'Koneksi terputus: transaksi disimpan offline & otomatis dikirim saat online lagi.'
               : 'Transaksi ${res.noNota} berhasil diselesaikan');
       showModalBottomSheet<void>(
         context: context,
@@ -274,7 +274,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: dark ? Colors.white38 : ZK.slate400),
+            Icon(Icons.chevron_right, color: dark ? Colors.white60 : ZK.slate400),
           ],
         ),
       ),
@@ -437,7 +437,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: kembali >= 0 ? const Color(0xFF10B981) : ZK.rose)),
+                        color: kembali >= 0 ? okTone(dark) : ZK.rose)),
               ],
             ),
             const SizedBox(width: 12),

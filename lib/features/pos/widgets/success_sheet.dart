@@ -74,8 +74,8 @@ class SuccessSheet extends StatelessWidget {
               Container(
                 height: 64,
                 width: 64,
-                decoration: const BoxDecoration(color: Color(0xFFECFDF5), shape: BoxShape.circle),
-                child: const Icon(Icons.check_circle, size: 40, color: Color(0xFF10B981)),
+                decoration: BoxDecoration(color: softBg(ZK.success, ZK.successBg, dark), shape: BoxShape.circle),
+                child: Icon(Icons.check_circle, size: 40, color: okTone(dark)),
               ),
               const SizedBox(height: 14),
               Text(judul,
@@ -93,7 +93,7 @@ class SuccessSheet extends StatelessWidget {
                     children: [
                       Icon(Icons.cloud_off, size: 13, color: ZK.amber700),
                       SizedBox(width: 5),
-                      Text('Tersimpan offline — akan disinkron otomatis',
+                      Text('Tersimpan offline: akan disinkron otomatis',
                           style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: ZK.amber700)),
                     ],
                   ),

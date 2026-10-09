@@ -98,7 +98,7 @@ class _PenggunaFormSheetState extends State<PenggunaFormSheet> {
                       _roleChip('Kasir', 2, dark),
                       const SizedBox(height: 6),
                       Text('Kasir: akses POS, Open Bill, dan Riwayat transaksi.',
-                          style: TextStyle(fontSize: 11.5, color: dark ? Colors.white54 : ZK.slate400)),
+                          style: TextStyle(fontSize: 11.5, color: dark ? Colors.white60 : ZK.slate500)),
                       const SizedBox(height: 14),
                       const FieldLabel('No. Telp (opsional)'),
                       TextField(

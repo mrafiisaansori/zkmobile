@@ -76,16 +76,16 @@ class _ToastCardState extends State<_ToastCard> with SingleTickerProviderStateMi
     super.dispose();
   }
 
-  (Color, Color, IconData) get _style => switch (widget.kind) {
-        ToastKind.success => (const Color(0xFF059669), const Color(0xFFECFDF5), Icons.check_circle_rounded),
+  (Color, Color, IconData) _style(bool dark) => switch (widget.kind) {
+        ToastKind.success => (okTone(dark), ZK.successBg, Icons.check_circle_rounded),
         ToastKind.error => (ZK.rose, ZK.rose50, Icons.error_rounded),
         ToastKind.info => (ZK.primary, ZK.brand50, Icons.info_rounded),
       };
 
   @override
   Widget build(BuildContext context) {
-    final (tone, toneBg, icon) = _style;
     final dark = Theme.of(context).brightness == Brightness.dark;
+    final (tone, toneBg, icon) = _style(dark);
     return Positioned(
       top: MediaQuery.of(context).padding.top + 8 + widget.index * _kToastHeight,
       left: 14,
@@ -144,7 +144,7 @@ class _ToastCardState extends State<_ToastCard> with SingleTickerProviderStateMi
                       ),
                       const SizedBox(width: 6),
                       Icon(Icons.close_rounded,
-                          size: 16, color: dark ? Colors.white38 : ZK.slate400),
+                          size: 16, color: dark ? Colors.white60 : ZK.slate400),
                     ],
                   ),
                 ),

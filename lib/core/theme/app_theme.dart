@@ -22,6 +22,11 @@ class ZK {
   static const rose50 = Color(0xFFFFF1F2);
   static const amber50 = Color(0xFFFFFBEB);
   static const amber700 = Color(0xFFB45309);
+  // Satu hijau "sukses/pas/lunas" untuk seluruh app (dulu ada 6 kode berbeda).
+  static const success = Color(0xFF047857); // teks/ikon di mode terang, AA di putih
+  static const successDark = Color(0xFF34D399); // teks/ikon di mode gelap, AA di cardDark
+  static const successBg = Color(0xFFECFDF5);
+  static const slate700 = Color(0xFF334155);
   // Dark mode
   static const bgDark = Color(0xFF0B1220);
   static const cardDark = Color(0xFF121C30);
@@ -45,6 +50,13 @@ final zkDarkTheme = ThemeData(
       seedColor: ZK.primary, brightness: Brightness.dark, primary: ZK.accent, onPrimary: Colors.white),
   fontFamily: 'Roboto',
 );
+
+// Hijau sukses sesuai tema.
+Color okTone(bool dark) => dark ? ZK.successDark : ZK.success;
+
+// Latar lembut untuk label/kotak status: varian -50 di mode terang, nada
+// transparan di mode gelap (pastel terang menyala di atas kartu gelap).
+Color softBg(Color tone, Color lightBg, bool dark) => dark ? tone.withValues(alpha: 0.16) : lightBg;
 
 // Breakpoint tunggal buat semua layout tablet-vs-ponsel di app ini.
 bool isTablet(BuildContext c) => MediaQuery.of(c).size.shortestSide >= 600;

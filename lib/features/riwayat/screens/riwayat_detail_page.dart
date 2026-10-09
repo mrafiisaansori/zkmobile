@@ -249,7 +249,7 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
                                 padding: const EdgeInsets.symmetric(vertical: 8),
                                 child: Text('Detail item tidak tersedia',
                                     style: TextStyle(
-                                        fontSize: 12, color: dark ? Colors.white38 : ZK.slate400)),
+                                        fontSize: 12, color: dark ? Colors.white60 : ZK.slate500)),
                               )
                             else
                               for (final d in t.detail) _itemRow(d, fg),
@@ -302,14 +302,14 @@ class _RiwayatDetailPageState extends State<RiwayatDetailPage> {
   Widget _statusBadge(bool sah, bool dark) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: sah ? const Color(0xFFECFDF5) : ZK.rose50,
+          color: sah ? softBg(ZK.success, ZK.successBg, dark) : softBg(ZK.rose, ZK.rose50, dark),
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(sah ? 'Sah' : 'Batal',
             style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: sah ? const Color(0xFF059669) : ZK.rose)),
+                color: sah ? okTone(dark) : ZK.rose)),
       );
 
   Widget _itemRow(DetailPenjualan d, Color fg) => Padding(

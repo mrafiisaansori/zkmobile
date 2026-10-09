@@ -127,8 +127,8 @@ class _CloseKasirSheetState extends State<CloseKasirSheet> {
                               const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                           decoration: BoxDecoration(
                               color: _selisih == 0
-                                  ? const Color(0xFFECFDF5)
-                                  : (_selisih < 0 ? ZK.rose50 : ZK.amber50),
+                                  ? softBg(ZK.success, ZK.successBg, dark)
+                                  : (_selisih < 0 ? softBg(ZK.rose, ZK.rose50, dark) : softBg(ZK.amber700, ZK.amber50, dark)),
                               borderRadius: r12),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,14 +141,14 @@ class _CloseKasirSheetState extends State<CloseKasirSheet> {
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: _selisih == 0
-                                          ? const Color(0xFF059669)
+                                          ? okTone(dark)
                                           : (_selisih < 0 ? ZK.rose : ZK.amber700))),
                               Text(rupiah(_selisih.abs()),
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w900,
                                       color: _selisih == 0
-                                          ? const Color(0xFF059669)
+                                          ? okTone(dark)
                                           : (_selisih < 0 ? ZK.rose : ZK.amber700))),
                             ],
                           ),
@@ -158,7 +158,7 @@ class _CloseKasirSheetState extends State<CloseKasirSheet> {
                         const SizedBox(height: 10),
                         Text(
                             'Penjualan non-tunai (${rupiah(((p['non_cash_sales'] as num?) ?? 0))}) tidak dihitung di sini karena tidak ada uang fisik di laci.',
-                            style: const TextStyle(fontSize: 11, color: ZK.slate400)),
+                            style: const TextStyle(fontSize: 11, color: ZK.slate500)),
                       ],
                       const SizedBox(height: 14),
                       const FieldLabel('Catatan (opsional)'),

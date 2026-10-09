@@ -66,7 +66,7 @@ class SheetHeader extends StatelessWidget {
 InputDecoration sheetInput(String hint, {String? prefix, bool dark = false}) => InputDecoration(
       hintText: hint,
       prefixText: prefix,
-      hintStyle: TextStyle(color: dark ? Colors.white38 : ZK.slate400, fontSize: 14),
+      hintStyle: TextStyle(color: dark ? Colors.white60 : ZK.slate500, fontSize: 14),
       prefixStyle: TextStyle(color: dark ? Colors.white70 : ZK.ink),
       filled: true,
       fillColor: dark ? ZK.bgDark : Colors.white,

@@ -4,7 +4,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/formatters.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
-import '../../shared/widgets/report_kit.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../cubit/laporan_closing_cubit.dart';
 import '../data/laporan_closing_repository.dart';
 
@@ -36,9 +36,9 @@ class _AdminClosingView extends StatelessWidget {
     return v < 0 ? 'Kurang ${rupiah(-v)}' : 'Lebih ${rupiah(v)}';
   }
 
-  Color? _selisihColor(int? v) {
+  Color? _selisihColor(BuildContext c, int? v) {
     if (v == null) return null;
-    if (v == 0) return okGreen;
+    if (v == 0) return RColors.of(c).ok;
     return v < 0 ? ZK.rose : ZK.amber700;
   }
 
@@ -95,7 +95,7 @@ class _AdminClosingView extends StatelessWidget {
     final hero = RHero(
       label: 'Selisih kas semua sesi',
       value: shifts.isEmpty ? '-' : _selisihText(selisih),
-      valueColor: shifts.isEmpty ? null : _selisihColor(selisih),
+      valueColor: shifts.isEmpty ? null : _selisihColor(context, selisih),
       facts: [
         ('Tunai', rupiah(r?.totalCashSales ?? 0)),
         ('Non-tunai', rupiah(r?.totalNonCashSales ?? 0)),
@@ -157,7 +157,7 @@ class _AdminClosingView extends StatelessWidget {
             RLine('Penjualan tunai', '+ ${rupiah(s.cashSales)}'),
             RLine('Uang seharusnya', rupiah(s.expectedCash), strong: true),
             RLine('Uang dihitung', s.actualCash == null ? 'Belum dihitung' : rupiah(s.actualCash!)),
-            RLine('Selisih', _selisihText(s.selisihCash), valueColor: _selisihColor(s.selisihCash)),
+            RLine('Selisih', _selisihText(s.selisihCash), valueColor: _selisihColor(context, s.selisihCash)),
             if (s.nonCashSales > 0) RLine('Non-tunai (di luar laci)', rupiah(s.nonCashSales)),
           ]),
         ],

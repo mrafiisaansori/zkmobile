@@ -4,6 +4,7 @@ import '../../../../core/cubit/list_cubit.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/models/models.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../shared/widgets/report_kit.dart';
 import '../data/varian_repository.dart';
 import '../widgets/group_form_sheet.dart';
 import '../widgets/options_sheet.dart';
@@ -110,6 +111,12 @@ class _AdminVarianView extends StatelessWidget {
                 if (state.status == ListStatus.loading || state.status == ListStatus.initial) {
                   return const Center(child: CircularProgressIndicator(color: ZK.primary));
                 }
+                // Gagal muat beda dengan kosong: tampilkan sebab + muat ulang.
+                if (state.status == ListStatus.error && state.items.isEmpty) {
+                  return RError(
+                      message: state.error ?? 'Periksa koneksi internet lalu muat ulang.',
+                      onRetry: () => context.read<ListCubit<ModifierGroup>>().refresh());
+                }
                 if (state.items.isEmpty) {
                   return const EmptyState(
                       icon: Icons.layers_outlined,
@@ -166,7 +173,7 @@ class _AdminVarianView extends StatelessWidget {
                                 _badge(g.single ? 'Pilih satu' : 'Pilih banyak',
                                     dark ? ZK.primary.withValues(alpha: 0.18) : ZK.brand50,
                                     dark ? Colors.white : ZK.brand700),
-                                if (g.wajib) _badge('Wajib', ZK.amber50, ZK.amber700),
+                                if (g.wajib) _badge('Wajib', softBg(ZK.amber700, ZK.amber50, dark), ZK.amber700),
                               ],
                             ),
                             const SizedBox(height: 6),
